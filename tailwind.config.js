@@ -31,7 +31,7 @@ module.exports = {
         peachcardpara: "#172c66",
         peachstroke: "#001858",
         peachmain: "#f3d2c1",
-        peachhighlight: "#fef6e4",
+        peachhighlight: "#f582ae",
         peachsecondary: "#8bd3dd",
         peachtertiary: "#f582ae",
       },

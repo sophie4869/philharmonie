@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchConcerts } from '../../../utils/scraping';
 import { connectToDatabase } from '../../../lib/mongodb';
-import { Concert } from '../../../utils/scraping';
 
 export async function POST() {
   try {

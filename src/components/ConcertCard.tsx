@@ -80,7 +80,7 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
           <div className="flex-1 flex flex-col">
             <h3 className={`text-lg font-bold mb-4 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>Program</h3>
             {concert.program.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '320px' }}>
                 {concert.program.map((item, index) => (
                   <div key={index} className="mb-4">
                     {item.isIntermission ? (

@@ -23,20 +23,22 @@ export default function PaletteWrapper({ children }: { children: React.ReactNode
     }
   }, [palette]);
 
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('bg-bluebg', 'bg-peachbg');
+      document.body.classList.add(palette === 'blue' ? 'bg-bluebg' : 'bg-peachbg');
+    }
+  }, [palette]);
+
   return (
-    <div className={palette === 'blue' ? 'min-h-screen bg-bluebg text-blueheadline' : 'min-h-screen bg-peachbg text-peachheadline'}>
+    <div className={palette === 'blue' ? 'min-h-screen text-blueheadline' : 'min-h-screen text-peachheadline'}>
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-end p-4">
-          <button
-            className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 mr-2 transition ${palette === 'blue' ? 'bg-bluehighlight text-blueheadline border-blueheadline' : 'bg-peachhighlight text-peachheadline border-peachheadline'}`}
-            onClick={() => setPalette(palette === 'blue' ? 'peach' : 'blue')}
-          >
-            Switch to {palette === 'blue' ? 'Peach' : 'Blue'} Palette
-          </button>
-        </div>
+        {/* Palette switch button removed from here */}
       </div>
       <div className="max-w-7xl mx-auto px-4">
-        {children}
+        {React.isValidElement(children)
+          ? React.cloneElement(children as React.ReactElement<any>, { palette, setPalette })
+          : children}
       </div>
     </div>
   );
