@@ -11,9 +11,10 @@ interface ConcertCardProps {
     date: string;
     category: string;
   };
+  palette: 'blue' | 'peach';
 }
 
-export default function ConcertCard({ concert }: ConcertCardProps) {
+export default function ConcertCard({ concert, palette }: ConcertCardProps) {
   return (
     <div className="bg-cream rounded-lg shadow-md p-4 flex flex-col h-full border border-blue">
       <img
@@ -37,7 +38,11 @@ export default function ConcertCard({ concert }: ConcertCardProps) {
             href={concert.booking_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block bg-pink text-navy font-semibold px-3 py-1 rounded hover:bg-blue hover:text-cream transition"
+            className={`inline-block font-semibold px-3 py-1 rounded hover:text-cream transition ${
+              palette === 'blue'
+                ? 'bg-bluehighlight text-blueheadline'
+                : 'bg-peachhighlight text-peachheadline'
+            }`}
           >
             Book
           </a>

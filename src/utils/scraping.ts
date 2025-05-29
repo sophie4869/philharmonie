@@ -33,8 +33,11 @@ async function fetchConcerts(): Promise<Concert[]> {
           const title = (card.querySelector('.EventCard-title')?.textContent || '').trim();
           const description = (card.querySelector('.EventCard-description p')?.textContent || '').trim();
           const location = (card.querySelector('.EventCard-place')?.textContent || '').trim();
-          const imageSrc = (card.querySelector('img')?.getAttribute('src') || '').trim();
-          const image_url = imageSrc.startsWith('http') ? imageSrc : `https://philharmoniedeparis.fr${imageSrc}`;
+          const defaultImage = "https://philharmoniedeparis.fr/themes/custom/pdp_theme/images/sprite.svg?v1.0#logo-pp-vertical";
+          const imageSrc = (card.parentElement?.querySelector('.Card-image img')?.getAttribute('src') || '').trim();
+          const image_url = imageSrc
+            ? (imageSrc.startsWith('http') ? imageSrc : `https://philharmoniedeparis.fr${imageSrc}`)
+            : defaultImage;
           const bookingSuffix = card.querySelector('.EventCard-button')?.getAttribute('href') || '';
           const booking_url = `https://philharmoniedeparis.fr${bookingSuffix}`;
           const priceNodes = card.querySelectorAll('.Prices-price');

@@ -17,9 +17,11 @@ interface Concert {
 export default function ConcertsClient({
     concerts,
     categories,
+    palette = "blue",
 }: {
     concerts: Concert[];
     categories: string[];
+    palette?: "blue" | "peach";
 }) {
     const [view, setView] = useState<"card" | "table">(
         () => (typeof window !== "undefined" && (localStorage.getItem("concertsView") as "card" | "table")) || "card"
@@ -82,7 +84,7 @@ export default function ConcertsClient({
             {view === "card" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {filtered.map((concert, idx) => (
-                        <ConcertCard key={idx} concert={concert} />
+                        <ConcertCard key={idx} concert={concert} palette={palette} />
                     ))}
                 </div>
             ) : (

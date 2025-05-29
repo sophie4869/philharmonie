@@ -9,10 +9,31 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        cream: "#FFF7E3",
-        navy: "#232946",
-        blue: "#AEECEF",
-        pink: "#F6A6B2",
+        // Blue palette
+        bluebg: "#d8eefe",
+        blueheadline: "#094067",
+        bluesub: "#5f6c7b",
+        bluecard: "#ffffff",
+        bluecardheading: "#094067",
+        bluecardpara: "#5f6c7b",
+        bluestroke: "#094067",
+        bluemain: "#ffffff",
+        bluehighlight: "#3da9fc",
+        bluesecondary: "#90b4ce",
+        bluetertiary: "#ef4565",
+
+        // Peach palette
+        peachbg: "#f3d2c1",
+        peachheadline: "#001858",
+        peachsub: "#172c66",
+        peachcard: "#fef6e4",
+        peachcardheading: "#001858",
+        peachcardpara: "#172c66",
+        peachstroke: "#001858",
+        peachmain: "#f3d2c1",
+        peachhighlight: "#fef6e4",
+        peachsecondary: "#8bd3dd",
+        peachtertiary: "#f582ae",
       },
     },
   },
