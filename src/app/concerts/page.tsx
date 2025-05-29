@@ -18,7 +18,11 @@ interface Concert {
 async function getConcerts(): Promise<Concert[]> {
   const { db } = await connectToDatabase();
   const concerts = await db.collection("concerts").find({}).sort({ date: 1 }).toArray();
-  return concerts.map(({ _id: _, ...rest }) => rest as Concert);
+
+  return concerts.map((concert) => {
+    const entries = Object.entries(concert).filter(([key]) => key !== "_id");
+    return Object.fromEntries(entries) as Concert;
+  });
 }
 
 export default async function ConcertsPage() {
