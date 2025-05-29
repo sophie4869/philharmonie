@@ -59,7 +59,7 @@ function getComposerSummary(program: ProgramItem[]): string {
 }
 
 function getMusicianSummary(musicians: Musician[]): string {
-  return musicians.filter(m => isPersonMusician(m.name)).map(m => getLastName(m.name)).join(', ');
+  return musicians.filter(m => isPersonMusician(m.name)).map(m => m.name).join(', ');
 }
 
 export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTableProps) {
@@ -82,16 +82,16 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
   return (
     <>
       <div className={`overflow-x-auto border-2 rounded-lg ${paletteClasses.border} bg-transparent`}>
-        <table className={`min-w-full rounded-lg font-sans border-2 ${paletteClasses.border} bg-white overflow-hidden`}>
+        <table className={`min-w-full font-sans bg-white overflow-hidden`}>
           <thead>
             <tr className={`${paletteClasses.tableHeader} font-sans`}>
-              <th className="p-2 text-base font-semibold font-sans rounded-tl-lg w-24">Image</th>
+              <th className="p-2 text-base font-semibold font-sans w-24">Image</th>
               <th className="p-2 text-base font-semibold font-sans">Title</th>
               <th className="p-2 text-base font-semibold font-sans">Date</th>
               <th className="p-2 text-base font-semibold font-sans min-w-[200px]">Composers</th>
-              <th className="p-2 text-base font-semibold font-sans min-w-[200px]">Musicians</th>
+              <th className="p-2 text-base font-semibold font-sans min-w-[250px]">Musicians</th>
               <th className="p-2 text-base font-semibold font-sans">Prices (€)</th>
-              <th className="p-2 text-base font-semibold font-sans rounded-tr-lg">Actions</th>
+              <th className="p-2 text-base font-semibold font-sans">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -107,7 +107,7 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
                 <td className={`p-2 font-semibold font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.title}</td>
                 <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{new Date(concert.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                 <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'} min-w-[200px]`}>{getComposerSummary(concert.program)}</td>
-                <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'} min-w-[200px]`}>{getMusicianSummary(concert.musicians)}</td>
+                <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'} min-w-[250px]`}>{getMusicianSummary(concert.musicians)}</td>
                 <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.prices.join(', ')}</td>
                 <td className="p-2 rounded-r-lg">
                   <div className="flex gap-2">
