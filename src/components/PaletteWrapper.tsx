@@ -2,13 +2,20 @@
 import React, { useState, useEffect } from "react";
 
 export default function PaletteWrapper({ children }: { children: React.ReactNode }) {
-  const [palette, setPalette] = useState<'blue' | 'peach'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('palette') as 'blue' | 'peach') || 'blue';
-    }
-    return 'blue';
-  });
+  // Always default to 'blue' for SSR and initial client render
+  const [palette, setPalette] = useState<'blue' | 'peach'>('blue');
 
+  // Only read from localStorage on the client after mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('palette');
+      if (stored === 'blue' || stored === 'peach') {
+        setPalette(stored);
+      }
+    }
+  }, []);
+
+  // Update localStorage when palette changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('palette', palette);

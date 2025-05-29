@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ConcertTableProps {
   concerts: {
@@ -14,6 +14,20 @@ interface ConcertTableProps {
 }
 
 export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTableProps & { palette?: 'blue' | 'peach' }) {
+  const [futureConcerts, setFutureConcerts] = useState<typeof concerts>([]);
+
+  useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const filteredAndSorted = concerts
+      .filter(concert => {
+        const concertDate = new Date(concert.date);
+        return concertDate >= today;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    setFutureConcerts(filteredAndSorted);
+  }, [concerts]);
+
   return (
     <div className="overflow-x-auto">
       <table className={`min-w-full rounded-lg font-sans border-2 ${palette === 'blue' ? 'bg-bluecard border-blueheadline' : 'bg-peachcard border-peachheadline'}`}>
@@ -29,7 +43,7 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
           </tr>
         </thead>
         <tbody>
-          {concerts.map((concert, idx) => (
+          {futureConcerts.map((concert, idx) => (
             <tr key={idx} className={`font-sans border-t ${palette === 'blue' ? 'border-blueheadline hover:bg-bluesecondary/10' : 'border-peachheadline hover:bg-peachsecondary/10'}`}>
               <td className="p-2">
                 <img
@@ -41,7 +55,7 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
               <td className={`p-2 font-semibold font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.title}</td>
               <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.category}</td>
               <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.location}</td>
-              <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{new Date(concert.date).toLocaleString()}</td>
+              <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{new Date(concert.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
               <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.prices.join(', ')}</td>
               <td className="p-2">
                 <a

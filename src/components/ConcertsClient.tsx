@@ -21,19 +21,24 @@ export default function ConcertsClient({
     concerts: Concert[];
     categories: string[];
 }) {
-    const [view, setView] = useState<"card" | "table">(
-        () => (typeof window !== "undefined" && (localStorage.getItem("concertsView") as "card" | "table")) || "card"
-    );
+    const [view, setView] = useState<"card" | "table">("card");
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("");
-    const [palette, setPalette] = useState<'blue' | 'peach'>(() => {
-        if (typeof window !== 'undefined') {
-            return (localStorage.getItem('palette') as 'blue' | 'peach') || 'blue';
-        }
-        return 'blue';
-    });
+    const [palette, setPalette] = useState<'blue' | 'peach'>('blue');
 
     useEffect(() => {
+        // Set initial view from localStorage on client mount
+        const storedView = localStorage.getItem("concertsView") as "card" | "table";
+        if (storedView) {
+            setView(storedView);
+        }
+    }, []);
+
+    useEffect(() => {
+        // Set initial palette from localStorage on client mount
+        const initialPalette = (localStorage.getItem('palette') as 'blue' | 'peach') || 'blue';
+        setPalette(initialPalette);
+
         const handlePaletteChange = () => {
             setPalette((localStorage.getItem('palette') as 'blue' | 'peach') || 'blue');
         };
@@ -101,9 +106,12 @@ export default function ConcertsClient({
             </div>
             {view === "card" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {filtered.map((concert, idx) => (
-                        <ConcertCard key={idx} concert={concert} palette={palette} />
-                    ))}
+                    {filtered
+                        .slice()
+                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .map((concert, idx) => (
+                            <ConcertCard key={idx} concert={concert} palette={palette} />
+                        ))}
                 </div>
             ) : (
                 <ConcertTable concerts={filtered} palette={palette} />
