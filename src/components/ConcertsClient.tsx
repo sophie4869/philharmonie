@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import ConcertCard from "./ConcertCard";
 import ConcertTable from "./ConcertTable";
 import { ProgramItem } from "../utils/scraping";
+import { PALETTE_CONFIG } from "./PaletteWrapper";
 
 interface Concert {
     title: string;
@@ -97,14 +98,17 @@ export default function ConcertsClient({
         return matchesSearch && matchesCategory && matchesComposer && matchesMusician && matchesDirector;
     });
 
+    const paletteKeys = Object.keys(PALETTE_CONFIG);
+    const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
-            <div className={`flex flex-col gap-2 mb-6 p-4 rounded-lg border-2 ${palette === 'blue' ? 'border-blueheadline' : 'border-peachheadline'} bg-cream`}>
+            <div className={`flex flex-col gap-2 mb-6 p-4 rounded-lg border-2 ${paletteClasses.border} bg-cream`}>
                 <div className="flex flex-wrap w-full gap-4">
                   <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className={`border-2 rounded px-3 py-2 w-full sm:w-48 md:w-56 bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${palette === 'blue' ? 'border-blueheadline focus:ring-blueheadline' : 'border-peachheadline focus:ring-peachheadline'}`}
+                      className={`border-2 rounded px-3 py-2 w-full sm:w-48 md:w-56 bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${paletteClasses.border}`}
                   >
                       <option value="">All categories</option>
                       {categories.map((cat) => (
@@ -118,7 +122,7 @@ export default function ConcertsClient({
                       placeholder="Search program..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className={`border-2 rounded px-3 py-2 flex-1 min-w-[180px] bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${palette === 'blue' ? 'border-blueheadline focus:ring-blueheadline' : 'border-peachheadline focus:ring-peachheadline'}`}
+                      className={`border-2 rounded px-3 py-2 flex-1 min-w-[180px] bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${paletteClasses.border}`}
                   />
                 </div>
                 <div className="flex flex-wrap w-full gap-4">
@@ -130,7 +134,7 @@ export default function ConcertsClient({
                         onChange={(e) => { setComposer(e.target.value); setShowComposerSuggestions(true); }}
                         onFocus={() => setShowComposerSuggestions(true)}
                         onBlur={() => setTimeout(() => setShowComposerSuggestions(false), 100)}
-                        className={`border-2 rounded px-3 py-2 w-full bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${palette === 'blue' ? 'border-blueheadline focus:ring-blueheadline' : 'border-peachheadline focus:ring-peachheadline'}`}
+                        className={`border-2 rounded px-3 py-2 w-full bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${paletteClasses.border}`}
                     />
                     {showComposerSuggestions && composer && (
                       <ul className="absolute z-10 bg-white border border-blueheadline rounded w-full max-h-40 overflow-y-auto shadow-lg">
@@ -148,7 +152,7 @@ export default function ConcertsClient({
                         onChange={(e) => { setMusician(e.target.value); setShowMusicianSuggestions(true); }}
                         onFocus={() => setShowMusicianSuggestions(true)}
                         onBlur={() => setTimeout(() => setShowMusicianSuggestions(false), 100)}
-                        className={`border-2 rounded px-3 py-2 w-full bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${palette === 'blue' ? 'border-blueheadline focus:ring-blueheadline' : 'border-peachheadline focus:ring-peachheadline'}`}
+                        className={`border-2 rounded px-3 py-2 w-full bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${paletteClasses.border}`}
                     />
                     {showMusicianSuggestions && musician && (
                       <ul className="absolute z-10 bg-white border border-blueheadline rounded w-full max-h-40 overflow-y-auto shadow-lg">
@@ -166,7 +170,7 @@ export default function ConcertsClient({
                         onChange={(e) => { setDirector(e.target.value); setShowDirectorSuggestions(true); }}
                         onFocus={() => setShowDirectorSuggestions(true)}
                         onBlur={() => setTimeout(() => setShowDirectorSuggestions(false), 100)}
-                        className={`border-2 rounded px-3 py-2 w-full bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${palette === 'blue' ? 'border-blueheadline focus:ring-blueheadline' : 'border-peachheadline focus:ring-peachheadline'}`}
+                        className={`border-2 rounded px-3 py-2 w-full bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${paletteClasses.border}`}
                     />
                     {showDirectorSuggestions && director && (
                       <ul className="absolute z-10 bg-white border border-blueheadline rounded w-full max-h-40 overflow-y-auto shadow-lg">
@@ -179,31 +183,24 @@ export default function ConcertsClient({
                 </div>
                 <div className="flex gap-2 ml-auto items-center">
                     <button
-                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${
-                            palette === 'blue'
-                                ? (view === 'card' ? 'bg-bluehighlight text-blueheadline border-blueheadline' : 'bg-bluebg text-blueheadline border-blueheadline')
-                                : (view === 'card' ? 'bg-peachhighlight text-peachheadline border-peachheadline' : 'bg-peachbg text-peachheadline border-peachheadline')
-                        }`}
+                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${view === 'card' ? paletteClasses.buttonActive : paletteClasses.button}`}
                         onClick={() => setView("card")}
                     >
                         Card View
                     </button>
                     <button
-                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${
-                            palette === 'blue'
-                                ? (view === 'table' ? 'bg-bluehighlight text-blueheadline border-blueheadline' : 'bg-bluebg text-blueheadline border-blueheadline')
-                                : (view === 'table' ? 'bg-peachhighlight text-peachheadline border-peachheadline' : 'bg-peachbg text-peachheadline border-peachheadline')
-                        }`}
+                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${view === 'table' ? paletteClasses.buttonActive : paletteClasses.button}`}
                         onClick={() => setView("table")}
                     >
                         Table View
                     </button>
                     <button
-                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition border-blueheadline bg-cream hover:bg-bluehighlight/20`}
+                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${paletteClasses.border} bg-cream hover:${paletteClasses.highlight}/20`}
                         title="Switch palette"
                         onClick={() => {
-                            const newPalette = palette === 'blue' ? 'peach' : 'blue';
-                            setPalette(newPalette);
+                            const idx = paletteKeys.indexOf(palette);
+                            const next = paletteKeys[(idx + 1) % paletteKeys.length];
+                            setPalette(next as typeof palette);
                         }}
                     >
                         🎨

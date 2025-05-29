@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ProgramItem } from '../utils/scraping';
+import { PALETTE_CONFIG } from './PaletteWrapper';
 
 interface ConcertCardProps {
   concert: {
@@ -18,6 +19,7 @@ interface ConcertCardProps {
 
 export default function ConcertCard({ concert, palette }: ConcertCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
 
   return (
     <div className="relative h-full min-h-[500px] perspective-1000">
@@ -48,21 +50,13 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
                   href={concert.booking_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`flex-1 text-center font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${
-                    palette === 'blue'
-                      ? 'bg-bluehighlight text-blueheadline border-blueheadline hover:bg-blueheadline hover:text-bluehighlight'
-                      : 'bg-peachhighlight text-peachheadline border-peachheadline hover:bg-peachheadline hover:text-peachhighlight'
-                  }`}
+                  className={`flex-1 text-center font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
                 >
                   Book
                 </a>
                 <button
                   onClick={() => setIsFlipped(true)}
-                  className={`flex-1 font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${
-                    palette === 'blue'
-                      ? 'bg-bluehighlight text-blueheadline border-blueheadline hover:bg-blueheadline hover:text-bluehighlight'
-                      : 'bg-peachhighlight text-peachheadline border-peachheadline hover:bg-peachheadline hover:text-peachhighlight'
-                  }`}
+                  className={`flex-1 font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
                 >
                   Program
                 </button>
@@ -84,23 +78,15 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
                 {concert.program.map((item, index) => (
                   <div key={index} className="mb-4">
                     {item.isIntermission ? (
-                      <div className={`text-sm font-semibold ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
-                        {item.title}
-                      </div>
+                      <div className={`text-sm font-semibold ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{item.title}</div>
                     ) : (
                       <>
                         {item.composer && (
-                          <div className={`text-sm font-semibold ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>
-                            {item.composer}
-                          </div>
+                          <div className={`text-sm font-semibold ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{item.composer}</div>
                         )}
-                        <div className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
-                          {item.title}
-                        </div>
+                        <div className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{item.title}</div>
                         {item.details && (
-                          <div className={`text-xs italic ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
-                            {item.details}
-                          </div>
+                          <div className={`text-xs italic ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{item.details}</div>
                         )}
                       </>
                     )}
@@ -108,17 +94,11 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
                 ))}
               </div>
             ) : (
-              <div className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
-                Program not yet available
-              </div>
+              <div className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>Program not yet available</div>
             )}
             <button
               onClick={() => setIsFlipped(false)}
-              className={`mt-auto font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${
-                palette === 'blue'
-                  ? 'bg-bluehighlight text-blueheadline border-blueheadline hover:bg-blueheadline hover:text-bluehighlight'
-                  : 'bg-peachhighlight text-peachheadline border-peachheadline hover:bg-peachheadline hover:text-peachhighlight'
-              }`}
+              className={`mt-auto font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
             >
               Back
             </button>

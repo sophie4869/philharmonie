@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ProgramItem } from '../utils/scraping';
+import { PALETTE_CONFIG } from './PaletteWrapper';
 
 interface ConcertTableProps {
   concerts: {
@@ -19,6 +20,7 @@ interface ConcertTableProps {
 export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTableProps) {
   const [futureConcerts, setFutureConcerts] = useState<typeof concerts>([]);
   const [selectedConcert, setSelectedConcert] = useState<typeof concerts[0] | null>(null);
+  const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
 
   useEffect(() => {
     const today = new Date();
@@ -37,7 +39,7 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
       <div className="overflow-x-auto">
         <table className={`min-w-full rounded-lg font-sans border-2 ${palette === 'blue' ? 'bg-bluecard border-blueheadline' : 'bg-peachcard border-peachheadline'}`}>
           <thead>
-            <tr className={`${palette === 'blue' ? 'bg-blueheadline text-bluehighlight' : 'bg-peachheadline text-peachhighlight'} font-sans`}>
+            <tr className={`${paletteClasses.tableHeader} font-sans`}>
               <th className="p-2 text-base font-semibold font-sans">Image</th>
               <th className="p-2 text-base font-semibold font-sans">Title</th>
               <th className="p-2 text-base font-semibold font-sans">Category</th>
@@ -68,21 +70,13 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
                       href={concert.booking_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${
-                        palette === 'blue'
-                          ? 'border-blueheadline bg-bluehighlight text-blueheadline hover:bg-blueheadline hover:text-bluehighlight'
-                          : 'border-peachheadline bg-peachhighlight text-peachheadline hover:bg-peachheadline hover:text-peachhighlight'
-                      }`}
+                      className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
                     >
                       Book
                     </a>
                     <button
                       onClick={() => setSelectedConcert(concert)}
-                      className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${
-                        palette === 'blue'
-                          ? 'border-blueheadline bg-bluehighlight text-blueheadline hover:bg-blueheadline hover:text-bluehighlight'
-                          : 'border-peachheadline bg-peachhighlight text-peachheadline hover:bg-peachheadline hover:text-peachhighlight'
-                      }`}
+                      className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
                     >
                       Program
                     </button>
