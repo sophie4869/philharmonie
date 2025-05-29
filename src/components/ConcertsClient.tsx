@@ -17,17 +17,29 @@ interface Concert {
 export default function ConcertsClient({
     concerts,
     categories,
-    palette = "blue",
 }: {
     concerts: Concert[];
     categories: string[];
-    palette?: "blue" | "peach";
 }) {
     const [view, setView] = useState<"card" | "table">(
         () => (typeof window !== "undefined" && (localStorage.getItem("concertsView") as "card" | "table")) || "card"
     );
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("");
+    const [palette, setPalette] = useState<'blue' | 'peach'>(() => {
+        if (typeof window !== 'undefined') {
+            return (localStorage.getItem('palette') as 'blue' | 'peach') || 'blue';
+        }
+        return 'blue';
+    });
+
+    useEffect(() => {
+        const handlePaletteChange = () => {
+            setPalette((localStorage.getItem('palette') as 'blue' | 'peach') || 'blue');
+        };
+        window.addEventListener('palettechange', handlePaletteChange);
+        return () => window.removeEventListener('palettechange', handlePaletteChange);
+    }, []);
 
     useEffect(() => {
         localStorage.setItem("concertsView", view);
@@ -44,18 +56,18 @@ export default function ConcertsClient({
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
+            <div className={`flex flex-col md:flex-row md:items-end gap-4 mb-6 p-4 rounded-lg border-2 ${palette === 'blue' ? 'border-blueheadline' : 'border-peachheadline'} bg-cream`}>
                 <input
                     type="text"
                     placeholder="Search concerts..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="border border-blue rounded px-3 py-2 w-full md:w-1/3 bg-cream text-navy focus:outline-none focus:ring-2 focus:ring-blue"
+                    className={`border-2 rounded px-3 py-2 w-full md:w-1/3 bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${palette === 'blue' ? 'border-blueheadline focus:ring-blueheadline' : 'border-peachheadline focus:ring-peachheadline'}`}
                 />
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="border border-blue rounded px-3 py-2 bg-cream text-navy focus:outline-none focus:ring-2 focus:ring-blue"
+                    className={`border-2 rounded px-3 py-2 bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${palette === 'blue' ? 'border-blueheadline focus:ring-blueheadline' : 'border-peachheadline focus:ring-peachheadline'}`}
                 >
                     <option value="">All categories</option>
                     {categories.map((cat) => (
@@ -66,15 +78,21 @@ export default function ConcertsClient({
                 </select>
                 <div className="flex gap-2 ml-auto">
                     <button
-                        className={`px-4 py-2 rounded font-semibold border ${view === "card" ? "bg-blue text-cream" : "bg-cream text-navy border-blue"
-                            }`}
+                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${
+                            palette === 'blue'
+                                ? (view === 'card' ? 'bg-bluehighlight text-blueheadline border-blueheadline' : 'bg-bluebg text-blueheadline border-blueheadline')
+                                : (view === 'card' ? 'bg-peachhighlight text-peachheadline border-peachheadline' : 'bg-peachbg text-peachheadline border-peachheadline')
+                        }`}
                         onClick={() => setView("card")}
                     >
                         Card View
                     </button>
                     <button
-                        className={`px-4 py-2 rounded font-semibold border ${view === "table" ? "bg-blue text-cream" : "bg-cream text-navy border-blue"
-                            }`}
+                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${
+                            palette === 'blue'
+                                ? (view === 'table' ? 'bg-bluehighlight text-blueheadline border-blueheadline' : 'bg-bluebg text-blueheadline border-blueheadline')
+                                : (view === 'table' ? 'bg-peachhighlight text-peachheadline border-peachheadline' : 'bg-peachbg text-peachheadline border-peachheadline')
+                        }`}
                         onClick={() => setView("table")}
                     >
                         Table View
@@ -88,7 +106,7 @@ export default function ConcertsClient({
                     ))}
                 </div>
             ) : (
-                <ConcertTable concerts={filtered} />
+                <ConcertTable concerts={filtered} palette={palette} />
             )}
             {filtered.length === 0 && (
                 <div className="text-center text-navy mt-8">No concerts found.</div>
