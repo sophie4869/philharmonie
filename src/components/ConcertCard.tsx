@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ProgramItem } from '../utils/scraping';
+import { ProgramItem, Musician } from '../utils/scraping';
 import { PALETTE_CONFIG } from './PaletteWrapper';
 
 interface ConcertCardProps {
@@ -13,6 +13,7 @@ interface ConcertCardProps {
     date: string;
     category: string;
     program: ProgramItem[];
+    musicians: Musician[];
   };
   palette: 'blue' | 'peach';
 }
@@ -72,9 +73,22 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
             : 'bg-peachcard border-peachheadline'
         }`}>
           <div className="flex-1 flex flex-col">
-            <h3 className={`text-lg font-bold mb-4 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>Program</h3>
+            {concert.musicians.length > 0 && (
+              <>
+                <h3 className={`text-lg font-bold mb-2 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>Musicians</h3>
+                <div className="space-y-2 mb-4 overflow-y-auto" style={{ maxHeight: '120px' }}>
+                  {concert.musicians.map((musician, index) => (
+                    <div key={index} className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
+                      <span className="font-semibold">{musician.name}</span>
+                      {musician.role && <span className="italic">, {musician.role}</span>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            <h3 className={`text-lg font-bold mb-2 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>Program</h3>
             {concert.program.length > 0 ? (
-              <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '320px' }}>
+              <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '200px' }}>
                 {concert.program.map((item, index) => (
                   <div key={index} className="mb-4">
                     {item.isIntermission ? (

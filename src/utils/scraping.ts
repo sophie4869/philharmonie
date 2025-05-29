@@ -1,5 +1,10 @@
 import * as puppeteer from 'puppeteer';
 
+export interface Musician {
+  name: string;
+  role?: string;
+}
+
 export interface ProgramItem {
   composer: string;
   title: string;
@@ -18,58 +23,86 @@ export interface Concert {
   date: string;
   category: string;
   program: ProgramItem[];
+  musicians: Musician[];
 }
 
 const BASE_URL = 'https://philharmoniedeparis.fr/en/calendar?genreGps=2%2B&page=30';
 
-async function fetchProgramDetails(page: puppeteer.Page, url: string): Promise<ProgramItem[]> {
-  console.log(`Fetching program details from: ${url}`);
-  await page.goto(url, { waitUntil: 'networkidle2' });
-  
-  const programItems = await page.evaluate(() => {
-    const items: ProgramItem[] = [];
+async function fetchMusicianDetails(page: puppeteer.Page): Promise<Musician[]> {
+  const musicians = await page.evaluate(() => {
+    const items: Musician[] = [];
+    const distribLines = document.querySelectorAll('.distrib-line');
     
-    // First check for program blocks (composer + title format)
-    const programBlocks = document.querySelectorAll('.program-block, .program-intermission');
-    if (programBlocks.length > 0) {
-      programBlocks.forEach(block => {
-        if (block.classList.contains('program-intermission')) {
-          items.push({
-            composer: '',
-            title: 'Intermission',
-            isIntermission: true
-          });
-        } else {
-          const composer = block.querySelector('.program-composer')?.textContent?.trim() || '';
-          const title = block.querySelector('.program-title')?.textContent?.trim() || '';
-          const details = block.querySelector('.program-comOeuvre')?.textContent?.trim();
-          
-          items.push({
-            composer,
-            title,
-            details
-          });
-        }
-      });
-    } else {
-      // If no program blocks found, look for simple program titles
-      const programTitles = document.querySelectorAll('.program-title');
-      programTitles.forEach(title => {
-        const titleText = title.textContent?.trim() || '';
-        if (titleText) {
-          items.push({
-            composer: '',
-            title: titleText
-          });
-        }
-      });
-    }
+    distribLines.forEach(line => {
+      const name = line.querySelector('.distrib-title')?.textContent?.trim() || '';
+      const role = line.querySelector('.distrib-roles')?.textContent?.trim().replace(/^,\s*/, '') || '';
+      
+      if (name) {
+        items.push({
+          name,
+          role: role || undefined
+        });
+      }
+    });
     
     return items;
   });
   
-  console.log(`Found ${programItems.length} program items`);
-  return programItems;
+  console.log(`Found ${musicians.length} musicians`);
+  return musicians;
+}
+
+async function fetchProgramDetails(page: puppeteer.Page, url: string): Promise<{ program: ProgramItem[], musicians: Musician[] }> {
+  console.log(`Fetching program details from: ${url}`);
+  await page.goto(url, { waitUntil: 'networkidle2' });
+  
+  const [programItems, musicianItems] = await Promise.all([
+    page.evaluate(() => {
+      const items: ProgramItem[] = [];
+      
+      // First check for program blocks (composer + title format)
+      const programBlocks = document.querySelectorAll('.program-block, .program-intermission');
+      if (programBlocks.length > 0) {
+        programBlocks.forEach(block => {
+          if (block.classList.contains('program-intermission')) {
+            items.push({
+              composer: '',
+              title: 'Intermission',
+              isIntermission: true
+            });
+          } else {
+            const composer = block.querySelector('.program-composer')?.textContent?.trim() || '';
+            const title = block.querySelector('.program-title')?.textContent?.trim() || '';
+            const details = block.querySelector('.program-comOeuvre')?.textContent?.trim();
+            
+            items.push({
+              composer,
+              title,
+              details
+            });
+          }
+        });
+      } else {
+        // If no program blocks found, look for simple program titles
+        const programTitles = document.querySelectorAll('.program-title');
+        programTitles.forEach(title => {
+          const titleText = title.textContent?.trim() || '';
+          if (titleText) {
+            items.push({
+              composer: '',
+              title: titleText
+            });
+          }
+        });
+      }
+      
+      return items;
+    }),
+    fetchMusicianDetails(page)
+  ]);
+  
+  console.log(`Found ${programItems.length} program items and ${musicianItems.length} musicians`);
+  return { program: programItems, musicians: musicianItems };
 }
 
 type ConcertCheckFunction = (concert: Partial<Concert>) => Promise<boolean>;
@@ -130,7 +163,8 @@ async function fetchConcerts(
               status,
               date,
               category,
-              program: []
+              program: [],
+              musicians: []
             });
           }
         });
@@ -158,7 +192,9 @@ async function fetchConcerts(
     
     if (needsProgram) {
       try {
-        concert.program = await fetchProgramDetails(page, concert.booking_url);
+        const { program, musicians } = await fetchProgramDetails(page, concert.booking_url);
+        concert.program = program;
+        concert.musicians = musicians;
         if (concert.program.length === 0) {
           console.log(`No program found for: ${concert.title}`);
           emptyProgramCount++;
@@ -168,6 +204,7 @@ async function fetchConcerts(
       } catch (error) {
         console.error(`Failed to fetch program for concert: ${concert.title}`, error);
         concert.program = [];
+        concert.musicians = [];
         emptyProgramCount++;
       }
     } else {

@@ -39,3 +39,35 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 500px; /* Adjust as needed */
+  width: 350px;  /* Adjust as needed */
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 0 0 2px #b6e0fe;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.card-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.card-content {
+  flex: 1 1 0;
+  overflow-y: auto;
+}
+
+.card-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  /* No need for special positioning, flexbox handles it */
+}

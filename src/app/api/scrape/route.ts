@@ -17,7 +17,8 @@ export async function POST() {
         const existing = await collection.findOne({
           title: concert.title,
           date: concert.date,
-          program: { $exists: true, $ne: [] }
+          program: { $exists: true, $ne: [] },
+          musicians: { $exists: true }
         });
         
         
