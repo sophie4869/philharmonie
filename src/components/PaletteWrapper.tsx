@@ -26,7 +26,7 @@ export const PALETTE_CONFIG = {
     highlight: 'bg-minthighlight',
     border: 'border-mintheadline',
     button: 'bg-minthighlight text-mintheadline border-mintheadline hover:bg-mintheadline hover:text-minthighlight',
-    buttonActive: 'bg-mintmain text-minthighlight border-mintheadline',
+    buttonActive: 'bg-mintheadline text-minthighlight border-mintheadline',
     tableHeader: 'bg-mintheadline text-minthighlight',
   },
 };
