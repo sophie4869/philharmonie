@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import ConcertCard from "./ConcertCard";
 import ConcertTable from "./ConcertTable";
+import { ProgramItem } from "../utils/scraping";
 
 interface Concert {
     title: string;
@@ -12,6 +13,7 @@ interface Concert {
     prices: number[];
     date: string;
     category: string;
+    program: ProgramItem[];
 }
 
 export default function ConcertsClient({
