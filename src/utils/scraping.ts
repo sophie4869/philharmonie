@@ -1,45 +1,69 @@
-import axios from 'axios';
-import * as cheerio from 'cheerio';
-import { Concert } from '../lib/types';
+import puppeteer from 'puppeteer';
 
-// Placeholder URL for Philharmonie concerts
-const CONCERTS_URL = 'https://philharmoniedeparis.fr/en/agenda';
+export interface Concert {
+  title: string;
+  description: string;
+  location: string;
+  image_url: string;
+  booking_url: string;
+  prices: number[];
+  status: 'available' | 'few_remaining' | 'sold_out';
+  date: string;
+  category: string;
+}
 
-export async function fetchConcerts(): Promise<Concert[]> {
-  const { data } = await axios.get(CONCERTS_URL);
-  const $ = cheerio.load(data);
-  const concerts: Concert[] = [];
+const BASE_URL = 'https://philharmoniedeparis.fr/en/calendar?genreGps=2%2B&page=30';
 
-  // TODO: Update selectors based on real Philharmonie HTML structure
-  $('.event-listing .event').each((_, el) => {
-    const title = $(el).find('.event-title').text().trim();
-    const date = $(el).find('.event-date').attr('datetime') || '';
-    const location = $(el).find('.event-location').text().trim();
-    const artists = $(el).find('.event-artists').text().split(',').map(a => a.trim());
-    const composers = $(el).find('.event-composers').text().split(',').map(c => c.trim());
-    const works = $(el).find('.event-works').text().split('\n').map(w => w.trim()).filter(Boolean);
-    const type = $(el).find('.event-type').text().split(',').map(t => t.trim());
-    const image_url = $(el).find('img').attr('src') || '';
-    const subscription_eligible = $(el).find('.event-subscription').length > 0;
-    const status = $(el).find('.event-status').text().toLowerCase().includes('sold')
-      ? 'sold_out'
-      : $(el).find('.event-status').text().toLowerCase().includes('few')
-      ? 'few_remaining'
-      : 'available';
+async function fetchConcerts(): Promise<Concert[]> {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(BASE_URL, { waitUntil: 'networkidle2' });
 
-    concerts.push({
-      title,
-      date,
-      location,
-      artists,
-      composers,
-      works,
-      type,
-      image_url,
-      subscription_eligible,
-      status,
+  // Wait for at least one event card to appear
+  await page.waitForSelector('.EventCard-content', { timeout: 15000 });
+
+  const concerts: Concert[] = await page.evaluate(() => {
+    const results: Concert[] = [];
+    const dateWrappers = document.querySelectorAll('.calendar-date-wrapper');
+    dateWrappers.forEach(dateWrapper => {
+      const date = (dateWrapper.querySelector('h2.calendar-date')?.textContent || '').trim();
+      let next = dateWrapper.nextElementSibling;
+      while (next && !next.classList.contains('calendar-date-wrapper')) {
+        next.querySelectorAll('.EventCard-content').forEach(card => {
+          const title = (card.querySelector('.EventCard-title')?.textContent || '').trim();
+          const description = (card.querySelector('.EventCard-description p')?.textContent || '').trim();
+          const location = (card.querySelector('.EventCard-place')?.textContent || '').trim();
+          const imageSrc = (card.querySelector('img')?.getAttribute('src') || '').trim();
+          const image_url = imageSrc.startsWith('http') ? imageSrc : `https://philharmoniedeparis.fr${imageSrc}`;
+          const bookingSuffix = card.querySelector('.EventCard-button')?.getAttribute('href') || '';
+          const booking_url = `https://philharmoniedeparis.fr${bookingSuffix}`;
+          const priceNodes = card.querySelectorAll('.Prices-price');
+          const prices = Array.from(priceNodes).map(p => parseFloat(p.textContent?.replace('€', '').trim() || '')).filter(n => !isNaN(n));
+          const availabilityText = (card.querySelector('.event-availabilityAlert')?.textContent || '').toLowerCase();
+          const status = availabilityText.includes('last') ? 'few_remaining'
+            : availabilityText.includes('sold') ? 'sold_out'
+            : 'available';
+          const category = (card.querySelector('.EventCard-category')?.textContent || '').trim();
+          results.push({
+            title,
+            description,
+            location,
+            image_url,
+            booking_url,
+            prices,
+            status,
+            date,
+            category,
+          });
+        });
+        next = next.nextElementSibling;
+      }
     });
+    return results;
   });
 
+  await browser.close();
   return concerts;
-} 
+}
+
+export { fetchConcerts };
