@@ -124,6 +124,7 @@ export default function ConcertsClient({
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
+            <h1 className={`text-3xl font-bold mb-6 font-sans ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>Philharmonie de Paris Concerts</h1>
             <div className={`flex flex-col gap-2 mb-6 p-4 rounded-lg border-2 ${paletteClasses.border} bg-cream`}>
                 <div className="flex flex-wrap w-full gap-4">
                   <select
