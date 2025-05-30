@@ -118,12 +118,22 @@ export default function ConcertCard({ concert, palette, isFlipped, onSetFlip }: 
             ) : (
               <div className={`text-sm ${paletteClasses.cardpara}`}>Program not yet available</div>
             )}
-            <button
-              onClick={() => onSetFlip(false)}
-              className={`mt-auto font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
-            >
-              Back
-            </button>
+            <div className="mt-auto flex gap-2">
+              <a
+                href={concert.booking_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex-1 text-center font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
+              >
+                Book
+              </a>
+              <button
+                onClick={() => onSetFlip(false)}
+                className={`flex-1 font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
+              >
+                Back
+              </button>
+            </div>
           </div>
         </div>
       </div>
