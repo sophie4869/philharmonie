@@ -119,6 +119,22 @@ export default function ConcertsClient({
     const paletteKeys = Object.keys(PALETTE_CONFIG);
     const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
 
+    // Helper function to group concerts by month
+    const groupConcertsByMonth = (concertsToGroup: Concert[]) => {
+        const groups: { [key: string]: Concert[] } = {};
+        concertsToGroup
+            .slice()
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .forEach(concert => {
+                const monthYear = new Date(concert.date).toLocaleString('default', { month: 'long', year: 'numeric' });
+                if (!groups[monthYear]) {
+                    groups[monthYear] = [];
+                }
+                groups[monthYear].push(concert);
+            });
+        return groups;
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             <h1 className={`text-3xl font-bold mb-6 font-sans ${paletteClasses.text}`}>Philharmonie de Paris Concerts</h1>
@@ -240,13 +256,17 @@ export default function ConcertsClient({
                 </div>
             </div>
             {view === "card" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {filtered
-                        .slice()
-                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                        .map((concert, idx) => (
-                            <ConcertCard key={idx} concert={concert} palette={palette} />
-                        ))}
+                <div className="space-y-8">
+                    {Object.entries(groupConcertsByMonth(filtered)).map(([monthYear, concertsInMonth]) => (
+                        <div key={monthYear} className={`p-4 rounded-lg border-2 ${paletteClasses.border} ${paletteClasses.bg}`}>
+                            <h2 className={`text-2xl font-bold mb-4 ${paletteClasses.headline}`}>{monthYear}</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                                {concertsInMonth.map((concert, idx) => (
+                                    <ConcertCard key={idx} concert={concert} palette={palette} />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : view === "table" ? (
                 <ConcertTable concerts={filtered} palette={palette} />

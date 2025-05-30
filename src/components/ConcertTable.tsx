@@ -70,6 +70,21 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
   // Use concerts as passed in (already filtered for future concerts)
   const sortedConcerts = concerts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
+  // Helper function to group concerts by month
+  const groupConcertsByMonth = (concertsToGroup: typeof concerts) => {
+      const groups: { [key: string]: typeof concerts } = {};
+      concertsToGroup.forEach(concert => {
+              const monthYear = new Date(concert.date).toLocaleString('default', { month: 'long', year: 'numeric' });
+              if (!groups[monthYear]) {
+                  groups[monthYear] = [];
+              }
+              groups[monthYear].push(concert);
+          });
+      return groups;
+  };
+
+  const groupedConcerts = groupConcertsByMonth(sortedConcerts);
+
   return (
     <>
       <div className={`overflow-x-auto border-2 rounded-lg ${paletteClasses.border} bg-transparent`}>
@@ -86,41 +101,50 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
             </tr>
           </thead>
           <tbody>
-            {sortedConcerts.map((concert, idx) => (
-              <tr key={idx} className={`font-sans border-t ${paletteClasses.border} bg-white hover:bg-gray-100 ${idx === 0 ? 'first:rounded-t-lg' : ''} ${idx === sortedConcerts.length - 1 ? 'last:rounded-b-lg' : ''}`}>
-                <td className="p-2 rounded-l-lg">
-                  <Image 
-                    src={concert.image_url} 
-                    alt={concert.title}
-                    width={100}
-                    height={67}
-                    className="w-24 h-16 object-cover rounded"
-                  />
-                </td>
-                <td className={`p-2 font-semibold font-sans ${paletteClasses.cardheading}`}>{concert.title}</td>
-                <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{new Date(concert.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
-                <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[200px]`}>{getComposerSummary(concert.program)}</td>
-                <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[250px]`}>{getMusicianSummary(concert.musicians)}</td>
-                <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{concert.prices.join(', ')}</td>
-                <td className="p-2 rounded-r-lg">
-                  <div className="flex gap-2">
-                    <a
-                      href={concert.booking_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
-                    >
-                      Book
-                    </a>
-                    <button
-                      onClick={() => setSelectedConcert(concert)}
-                      className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
-                    >
-                      Program
-                    </button>
-                  </div>
-                </td>
-              </tr>
+            {Object.entries(groupedConcerts).map(([monthYear, concertsInMonth]) => (
+              <React.Fragment key={monthYear}>
+                <tr>
+                  <td colSpan={7} className={`p-2 text-lg font-bold ${paletteClasses.headline} bg-gray-50 border-t border-b ${paletteClasses.border}`}>
+                    {monthYear}
+                  </td>
+                </tr>
+                {concertsInMonth.map((concert, idx) => (
+                  <tr key={idx} className={`font-sans border-t ${paletteClasses.border} bg-white hover:bg-gray-100`}>
+                    <td className="p-2">
+                      <Image 
+                        src={concert.image_url} 
+                        alt={concert.title}
+                        width={100}
+                        height={67}
+                        className="w-24 h-16 object-cover rounded"
+                      />
+                    </td>
+                    <td className={`p-2 font-semibold font-sans ${paletteClasses.cardheading}`}>{concert.title}</td>
+                    <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{new Date(concert.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
+                    <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[200px]`}>{getComposerSummary(concert.program)}</td>
+                    <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[250px]`}>{getMusicianSummary(concert.musicians)}</td>
+                    <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{concert.prices.join(', ')}</td>
+                    <td className="p-2">
+                      <div className="flex gap-2">
+                        <a
+                          href={concert.booking_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
+                        >
+                          Book
+                        </a>
+                        <button
+                          onClick={() => setSelectedConcert(concert)}
+                          className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
+                        >
+                          Program
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
