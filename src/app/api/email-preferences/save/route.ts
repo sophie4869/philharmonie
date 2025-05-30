@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { EmailPreferences } from '@/lib/models/EmailPreferences';
-import { sendAlert } from '@/lib/email';
+import { sendAlert, sendPreferencesUpdateEmail } from '@/lib/email';
 
 interface SavePreferencesRequest {
   email: string;
   subscribedMusicians: { name: string; role?: string }[];
-  digestFrequency: 'daily' | 'weekly' | 'monthly';
+  digestFrequency: 'monthly' | 'quarterly' | 'yearly';
 }
 
 export async function POST(request: Request) {
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!['daily', 'weekly', 'monthly'].includes(digestFrequency)) {
+    if (!['monthly', 'quarterly', 'yearly'].includes(digestFrequency)) {
       return NextResponse.json(
         { error: 'Invalid digest frequency' },
         { status: 400 }
@@ -98,33 +98,9 @@ export async function POST(request: Request) {
 
     if (newMusicians.length > 0) {
       try {
-        const notificationContent = `
-          <h2>New Musician Subscriptions</h2>
-          <p>You have subscribed to receive updates for the following musicians:</p>
-          <ul>
-            ${newMusicians.map(m => `<li>${m.name}${m.role ? ` (${m.role})` : ''}</li>`).join('')}
-          </ul>
-        `;
-
-        await sendAlert(
-          email,
-          'New Subscriptions',
-          {
-            title: 'New Musician Subscriptions',
-            description: notificationContent,
-            location: 'Online',
-            image_url: '',
-            booking_url: '',
-            prices: [],
-            date: new Date().toISOString(),
-            category: 'Subscription',
-            program: [],
-            musicians: [],
-            status: 'available'
-          }
-        );
+        await sendPreferencesUpdateEmail(email, { digestFrequency, subscribedMusicians });
       } catch (error) {
-        console.error('Error sending subscription notification:', error);
+        console.error('Error sending preferences update email:', error);
         // Don't fail the request if notification email fails
       }
     }

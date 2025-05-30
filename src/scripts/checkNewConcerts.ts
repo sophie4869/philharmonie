@@ -2,7 +2,7 @@ import 'dotenv/config';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '../lib/mongodb';
 import { EmailPreferences } from '../lib/models/EmailPreferences';
-import { sendAlert } from '../lib/email';
+import { sendAlert, sendDigestForAllMusicians } from '../lib/email';
 import { Concert as ConcertType } from '../utils/scraping';
 
 // Verify environment variables
@@ -19,30 +19,30 @@ if (!process.env.MONGODB_URI) {
 // Test concerts to add
 const testConcerts: ConcertType[] = [
   {
-    title: "Test Concert 1",
+    title: "Test Argerich Concert",
     description: "A test concert",
     location: "Test Hall",
-    image_url: "https://example.com/image1.jpg",
+    image_url: "https://deneb.philharmoniedeparis.fr/uploads/images/cache/event_agenda/rc/LeqfarET/uploads/images/6745f8ed6eddb_Visuel-Ravel-site-1700x700.jpg",
     booking_url: "https://example.com/book1",
     prices: [20, 30, 40],
     status: "available",
     date: new Date().toISOString(),
-    category: "Test Category",
-    program: [{ title: "Test Piece", composer: "Test Composer" }],
+    category: "Symphony",
+    program: [{ title: "Concerto", composer: "Schumann" }],
     musicians: [{ name: "Martha Argerich" }]
   },
   {
-    title: "Test Concert 2",
+    title: "Test Kissin Concert",
     description: "Another test concert",
     location: "Test Hall 2",
-    image_url: "https://example.com/image2.jpg",
+    image_url: "https://deneb.philharmoniedeparis.fr/uploads/images/cache/event_agenda/rc/LeqfarET/uploads/images/6745f8ed6eddb_Visuel-Ravel-site-1700x700.jpg",
     booking_url: "https://example.com/book2",
     prices: [25, 35, 45],
     status: "available",
     date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-    category: "Test Category",
-    program: [{ title: "Test Piece 2", composer: "Test Composer 2" }],
-    musicians: [{ name: "Martha Argerich" }]
+    category: "Recital",
+    program: [{ title: "Nocturne", composer: "Chopin" }],
+    musicians: [{ name: "Evgeny Kissin" }]
   }
 ];
 
@@ -71,8 +71,7 @@ async function checkNewConcerts() {
         );
         
         console.log(`Found ${relevantConcerts.length} concerts featuring ${musician.name}`);
-
-        // Send alerts for each relevant concert
+        // Send one alert email per new concert for this musician
         for (const concert of relevantConcerts) {
           console.log(`Sending alert for concert: ${concert.title}`);
           await sendAlert(subscriber.email, musician.name, concert);

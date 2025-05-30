@@ -3,7 +3,7 @@ import mongoose, { Model } from 'mongoose';
 interface IEmailPreferences {
   email: string;
   subscribedMusicians: { name: string; role?: string }[];
-  digestFrequency: 'weekly' | 'monthly';
+  digestFrequency: 'monthly' | 'quarterly' | 'yearly';
   lastDigestSent: Date | null;
   isActive: boolean;
   createdAt: Date;
@@ -22,8 +22,8 @@ const emailPreferencesSchema = new mongoose.Schema({
   }],
   digestFrequency: {
     type: String,
-    enum: ['weekly', 'monthly'],
-    default: 'weekly',
+    enum: ['monthly', 'quarterly', 'yearly'],
+    default: 'monthly',
   },
   lastDigestSent: {
     type: Date,

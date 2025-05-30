@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { connectToDatabase } from '../lib/mongodb';
 import { Concert } from '../lib/models/Concert';
 import { EmailPreferences } from '../lib/models/EmailPreferences';
-import { sendMusicianDigest } from '../lib/email';
+import { sendMusicianDigest, sendDigestForAllMusicians } from '../lib/email';
 import { Concert as ConcertType } from '../utils/scraping';
 import { parse, isAfter } from 'date-fns';
 
@@ -15,6 +15,16 @@ if (!process.env.MAILJET_API_KEY || !process.env.MAILJET_API_SECRET) {
 
 if (!process.env.MONGODB_URI) {
   console.error('MongoDB URI is required');
+  process.exit(1);
+}
+
+// Validate frequency argument
+const validFrequencies = ['monthly', 'quarterly', 'yearly'] as const;
+type Frequency = typeof validFrequencies[number];
+
+const frequency = process.argv[2] as Frequency;
+if (!frequency || !validFrequencies.includes(frequency)) {
+  console.error('Please provide a valid frequency: monthly, quarterly, or yearly');
   process.exit(1);
 }
 
@@ -48,21 +58,25 @@ async function getUpcomingConcerts(musicianName: string): Promise<ConcertType[]>
 }
 
 async function sendDigests() {
-  console.log('Starting digest sending...');
+  console.log(`Starting ${frequency} digest sending...`);
   
   try {
     // Connect to database
     await connectToDatabase();
     console.log('Connected to database');
 
-    // Get all subscribers
-    const subscribers = await EmailPreferences.find({}).lean();
-    console.log(`Found ${subscribers.length} subscribers`);
+    // Get subscribers with matching frequency
+    const subscribers = await EmailPreferences.find({ 
+      digestFrequency: frequency,
+      isActive: true 
+    }).lean();
+    console.log(`Found ${subscribers.length} subscribers for ${frequency} frequency`);
 
     // For each subscriber, check their subscribed musicians
     for (const subscriber of subscribers) {
       console.log(`Processing subscriber: ${subscriber.email}`);
       
+      const musicianConcerts = [];
       for (const musician of subscriber.subscribedMusicians) {
         console.log(`Checking for musician: ${musician.name}`);
         
@@ -71,14 +85,25 @@ async function sendDigests() {
         
         if (upcomingConcerts.length > 0) {
           console.log(`Sending digest for ${musician.name} with ${upcomingConcerts.length} concerts`);
-          await sendMusicianDigest(subscriber.email, musician.name, upcomingConcerts);
+          musicianConcerts.push({ musician: musician.name, concerts: upcomingConcerts });
         } else {
           console.log(`No upcoming concerts found for ${musician.name}`);
         }
       }
+
+      if (musicianConcerts.length > 0) {
+        // Send one email per subscriber
+        await sendDigestForAllMusicians(subscriber.email, musicianConcerts);
+        
+        // Update lastDigestSent timestamp
+        await EmailPreferences.updateOne(
+          { email: subscriber.email },
+          { lastDigestSent: new Date() }
+        );
+      }
     }
 
-    console.log('Finished sending digests');
+    console.log(`Finished sending ${frequency} digests`);
   } catch (error) {
     console.error('Error sending digests:', error);
   } finally {
