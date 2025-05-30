@@ -23,6 +23,16 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
 
+  function formatConcertDate(dateString: string) {
+    const date = new Date(dateString);
+    // Example: Monday, June 2 or Wednesday, 4 Jun
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
   return (
     <div className="relative h-full min-h-[550px] perspective-1000">
       <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
@@ -43,7 +53,9 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
             <h3 className={`text-lg font-bold mb-1 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.title}</h3>
             <div className={`text-base font-semibold mb-1 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.category}</div>
             <div className={`text-[15px] font-medium mb-1 font-sans tracking-wide ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.location}</div>
-            <div className={`text-xs font-light italic mb-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.date.slice(0, 10)} {concert.date.slice(11, 16)}</div>
+            <div className={`text-xs font-light italic mb-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
+              {formatConcertDate(concert.date)}
+            </div>
             <p className={`text-sm font-normal mb-2 line-clamp-3 font-sans leading-relaxed ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.description}</p>
             <div className="mt-auto flex flex-col gap-2">
               {concert.prices.length > 0 && (
