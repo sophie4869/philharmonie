@@ -63,15 +63,23 @@ export default function ConcertsClient({
         return Array.from(set).sort();
     }, [futureConcerts]);
 
+    // DEBUG: Log selected category whenever it changes
+    useEffect(() => {
+        console.log("Selected category:", category);
+    }, [category]);
+
+    console.log("Future concert categories:", futureConcerts.map(c => c.category));
+
     const filtered = futureConcerts.filter((c) => {
+        // DEBUG: Log each comparison
+        if (category) {
+            console.log("Filtering concert category:", c.category, "against selected:", category);
+        }
         // Split search terms and convert to lowercase
         const searchTerms = search.toLowerCase().split(/\s+/).filter(term => term.length > 0);
-        
-        // If no search terms, return true
-        if (searchTerms.length === 0) return true;
 
         // Check if all search terms match anywhere in the concert data
-        const matchesSearch = searchTerms.every(term => {
+        const matchesSearch = searchTerms.length === 0 || searchTerms.every(term => {
             // Check title, description, and location
             const basicMatch = 
                 c.title.toLowerCase().includes(term) ||
@@ -95,13 +103,9 @@ export default function ConcertsClient({
         });
 
         const matchesCategory = category ? c.category === category : true;
-        
-        // Check if any program item matches the composer filter
         const matchesComposer = composer ? c.program.some(item => 
             item.composer?.toLowerCase().includes(composer.toLowerCase())
         ) : true;
-
-        // Check if any musician matches the musician filter
         const matchesMusician = musician ? c.musicians.some(m => 
             m.name.toLowerCase().includes(musician.toLowerCase())
         ) : true;
