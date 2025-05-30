@@ -2,7 +2,7 @@ import 'dotenv/config';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '../lib/mongodb';
 import { EmailPreferences } from '../lib/models/EmailPreferences';
-import { sendAlert, sendDigestForAllMusicians } from '../lib/email';
+import { sendAlert } from '../lib/email';
 import { Concert as ConcertType } from '../utils/scraping';
 
 // Verify environment variables

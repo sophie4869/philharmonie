@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { connectToDatabase } from '../lib/mongodb';
 import { Concert } from '../lib/models/Concert';
 import { EmailPreferences } from '../lib/models/EmailPreferences';
-import { sendMusicianDigest, sendDigestForAllMusicians } from '../lib/email';
+import { sendDigestForAllMusicians } from '../lib/email';
 import { Concert as ConcertType } from '../utils/scraping';
 import { parse, isAfter } from 'date-fns';
 
