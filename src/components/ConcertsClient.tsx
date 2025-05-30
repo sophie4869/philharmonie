@@ -395,7 +395,7 @@ export default function ConcertsClient({
                                     <span>Offers better search, filters, calendar view, and email alerts.</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                    <span>🛠️</span>
+                                    <span>🎵</span>
                                     <span>Not affiliated with the Philharmonie de Paris. <span className="italic">All concert data is automatically scraped from the <a href="https://philharmoniedeparis.fr/en" target="_blank" rel="noopener noreferrer" className="underline">official Philharmonie website</a>.</span></span>
                                 </div>
                                 <div className="flex items-start gap-2">
@@ -403,6 +403,10 @@ export default function ConcertsClient({
                                     <span>Made with love by Sophie Bi, a software engineer, photographer and classical music enthusiast.
                                         See <a href="https://sophiebi.com" target="_blank" rel="noopener noreferrer" className="underline">more of my work</a>.<br />
                                     </span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <span>⚙️</span>
+                                    <span>This is a best-effort project, running on free-tier tools and APIs. Want to see it scale? Support is welcome!</span>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <span>✉️</span>

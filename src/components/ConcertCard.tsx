@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ProgramItem, Musician } from '../utils/scraping';
 import { PALETTE_CONFIG } from './PaletteWrapper';
 import Image from 'next/image';
