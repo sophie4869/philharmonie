@@ -7,8 +7,8 @@ export interface Musician {
 }
 
 export interface ProgramItem {
-  composer: string;
   title: string;
+  composer?: string;
   details?: string;
   isIntermission?: boolean;
 }
@@ -20,7 +20,7 @@ export interface Concert {
   image_url: string;
   booking_url: string;
   prices: number[];
-  status: 'available' | 'few_remaining' | 'sold_out';
+  status: 'available' | 'sold_out' | 'few_remaining';
   date: string;
   category: string;
   program: ProgramItem[];

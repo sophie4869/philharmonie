@@ -4,19 +4,8 @@ import ConcertCard from "./ConcertCard";
 import ConcertTable from "./ConcertTable";
 import { ProgramItem } from "../utils/scraping";
 import { PALETTE_CONFIG } from "./PaletteWrapper";
-
-interface Concert {
-    title: string;
-    description: string;
-    location: string;
-    image_url: string;
-    booking_url: string;
-    prices: number[];
-    date: string;
-    category: string;
-    program: ProgramItem[];
-    musicians: { name: string; role?: string }[];
-}
+import { generateICS, getCalendarDays } from "../utils/calendar";
+import { Concert } from "../lib/types";
 
 export default function ConcertsClient({
     concerts,
@@ -29,7 +18,7 @@ export default function ConcertsClient({
     palette?: 'blue' | 'peach';
     setPalette?: (p: 'blue' | 'peach') => void;
 }) {
-    const [view, setView] = useState<"card" | "table">("card");
+    const [view, setView] = useState<"card" | "table" | "calendar">("card");
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("");
     const [composer, setComposer] = useState("");
@@ -37,10 +26,11 @@ export default function ConcertsClient({
     const [showComposerSuggestions, setShowComposerSuggestions] = useState(false);
     const [showMusicianSuggestions, setShowMusicianSuggestions] = useState(false);
     const [showContact, setShowContact] = useState(false);
+    const [currentMonth, setCurrentMonth] = useState(new Date());
 
     useEffect(() => {
         // Set initial view from localStorage on client mount
-        const storedView = localStorage.getItem("concertsView") as "card" | "table";
+        const storedView = localStorage.getItem("concertsView") as "card" | "table" | "calendar";
         if (storedView) {
             setView(storedView);
         }
@@ -200,6 +190,12 @@ export default function ConcertsClient({
                         Table View
                     </button>
                     <button
+                        className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${view === 'calendar' ? paletteClasses.buttonActive : paletteClasses.button}`}
+                        onClick={() => setView("calendar")}
+                    >
+                        Calendar View
+                    </button>
+                    <button
                         className={`px-3 py-2 rounded font-semibold text-base font-sans border-2 transition flex items-center justify-center ${paletteClasses.border} bg-cream hover:${paletteClasses.highlight}/20`}
                         title="Contact/About"
                         onClick={() => setShowContact(true)}
@@ -230,8 +226,95 @@ export default function ConcertsClient({
                             <ConcertCard key={idx} concert={concert} palette={palette} />
                         ))}
                 </div>
-            ) : (
+            ) : view === "table" ? (
                 <ConcertTable concerts={filtered} palette={palette} />
+            ) : (
+                <div className={`flex flex-col gap-4 rounded-lg p-4 border-2 ${paletteClasses.border} ${palette === 'blue' ? 'bg-white' : 'bg-peachcard'}`}>
+                    <div className="flex justify-between items-center">
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    const newMonth = new Date(currentMonth);
+                                    newMonth.setMonth(newMonth.getMonth() - 1);
+                                    setCurrentMonth(newMonth);
+                                }}
+                                className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${paletteClasses.button}`}
+                            >
+                                ←
+                            </button>
+                            <button
+                                onClick={() => setCurrentMonth(new Date())}
+                                className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${paletteClasses.button}`}
+                            >
+                                Today
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const newMonth = new Date(currentMonth);
+                                    newMonth.setMonth(newMonth.getMonth() + 1);
+                                    setCurrentMonth(newMonth);
+                                }}
+                                className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${paletteClasses.button}`}
+                            >
+                                →
+                            </button>
+                        </div>
+                        <div className={`text-xl font-bold ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>
+                            {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                        </div>
+                        <button
+                            onClick={() => {
+                                const icsContent = generateICS(filtered);
+                                const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                                const link = document.createElement('a');
+                                link.href = URL.createObjectURL(blob);
+                                link.download = 'philharmonie-concerts.ics';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            }}
+                            className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${paletteClasses.button}`}
+                        >
+                            Export to Calendar
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-7 gap-2">
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                            <div key={day} className={`text-center font-semibold p-2 ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>
+                                {day}
+                            </div>
+                        ))}
+                        {getCalendarDays(filtered, currentMonth).map((day, idx) => (
+                            <div
+                                key={idx}
+                                className={`min-h-[100px] p-2 border rounded ${
+                                    day.isCurrentMonth
+                                        ? palette === 'blue'
+                                            ? 'border-blueheadline'
+                                            : 'border-peachheadline'
+                                        : 'border-gray-200'
+                                } ${day.isToday ? 'bg-bluehighlight/20' : ''}`}
+                            >
+                                <div className={`text-sm font-semibold mb-1 ${day.isCurrentMonth ? '' : 'text-gray-400'}`}>
+                                    {day.date.getDate()}
+                                </div>
+                                {day.concerts.map((concert, concertIdx) => (
+                                    <div
+                                        key={concertIdx}
+                                        className={`text-xs p-1 mb-1 rounded cursor-pointer ${
+                                            palette === 'blue'
+                                                ? 'bg-bluehighlight/20 hover:bg-bluehighlight/30'
+                                                : 'bg-peachhighlight/20 hover:bg-peachhighlight/30'
+                                        }`}
+                                        onClick={() => window.open(concert.booking_url, '_blank')}
+                                    >
+                                        {concert.title}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             )}
             {filtered.length === 0 && (
                 <div className="text-center text-navy mt-8">No concerts found.</div>

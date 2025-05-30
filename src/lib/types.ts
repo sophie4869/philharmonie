@@ -1,12 +1,20 @@
 export interface Concert {
   title: string;
-  date: string; // ISO 8601
+  description: string;
   location: string;
-  artists: string[];
-  composers: string[];
-  works: string[];
-  type: string[];
   image_url: string;
-  subscription_eligible: boolean;
+  booking_url: string;
+  prices: number[];
+  date: string;
+  category: string;
+  program: ProgramItem[];
+  musicians: { name: string; role?: string }[];
   status: 'available' | 'sold_out' | 'few_remaining';
+}
+
+export interface ProgramItem {
+  title: string;
+  composer?: string;
+  details?: string;
+  isIntermission?: boolean;
 } 
