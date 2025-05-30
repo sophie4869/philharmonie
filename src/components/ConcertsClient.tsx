@@ -36,6 +36,7 @@ export default function ConcertsClient({
     const [musician, setMusician] = useState("");
     const [showComposerSuggestions, setShowComposerSuggestions] = useState(false);
     const [showMusicianSuggestions, setShowMusicianSuggestions] = useState(false);
+    const [showContact, setShowContact] = useState(false);
 
     useEffect(() => {
         // Set initial view from localStorage on client mount
@@ -199,6 +200,15 @@ export default function ConcertsClient({
                         Table View
                     </button>
                     <button
+                        className={`px-3 py-2 rounded font-semibold text-base font-sans border-2 transition flex items-center justify-center ${paletteClasses.border} bg-cream hover:${paletteClasses.highlight}/20`}
+                        title="Contact/About"
+                        onClick={() => setShowContact(true)}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-.659 1.591l-7.5 7.5a2.25 2.25 0 01-3.182 0l-7.5-7.5A2.25 2.25 0 012.25 6.993V6.75" />
+                        </svg>
+                    </button>
+                    <button
                         className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${paletteClasses.border} bg-cream hover:${paletteClasses.highlight}/20`}
                         title="Switch palette"
                         onClick={() => {
@@ -225,6 +235,45 @@ export default function ConcertsClient({
             )}
             {filtered.length === 0 && (
                 <div className="text-center text-navy mt-8">No concerts found.</div>
+            )}
+            {/* Contact/About Modal */}
+            {showContact && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className={`rounded-lg shadow-lg p-6 max-w-md w-full border-2 ${paletteClasses.border} ${palette === 'blue' ? 'bg-white' : 'bg-peachcard'} relative`}>
+                        <button
+                            className="absolute top-2 right-3 text-2xl font-bold focus:outline-none"
+                            onClick={() => setShowContact(false)}
+                            aria-label="Close"
+                        >
+                            ×
+                        </button>
+                        <div className={`text-lg font-bold mb-4 font-sans ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>About</div>
+                        <div className="flex flex-col gap-4 text-base font-sans">
+                            <div className="flex items-start gap-2">
+                                <span>🎻</span>
+                                <span>This site is created to help music lovers explore concerts at the Philharmonie de Paris without scrolling endlessly.</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                                <span>🔎</span>
+                                <span>Offers better search, filters, calendar view, and email alerts.</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                                <span>🛠️</span>
+                                <span>Not affiliated with the Philharmonie de Paris. <span className="italic">All concert data is automatically scraped from the <a href="https://philharmoniedeparis.fr/en" target="_blank" rel="noopener noreferrer" className="underline">official Philharmonie website</a>.</span></span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                                <span>❤️</span>
+                                <span>Made with love by Sophie Bi, a software engineer, photographer and classical music enthusiast.
+                                    See <a href="https://sophiebi.com" target="_blank" rel="noopener noreferrer" className="underline">more of my work</a>.<br />
+                                </span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                                <span>✉️</span>
+                                <span>Questions or feedback? Please contact <a href="mailto:sophie4869@gmail.com" className={`underline ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>sophie4869@gmail.com</a>.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
