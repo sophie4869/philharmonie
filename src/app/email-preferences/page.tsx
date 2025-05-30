@@ -5,18 +5,19 @@ import EmailPreferencesForm from '@/components/EmailPreferencesForm';
 
 export default function EmailPreferencesPage() {
   const [email, setEmail] = useState('');
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real application, you would validate the email here
-    // and possibly require authentication
+  const handleContinue = () => {
+    console.log('Current email value:', email);
+    setSubmittedEmail(email);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-2xl mx-auto px-4">
-        {!email ? (
-          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+        {!submittedEmail ? (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h1 style={{ color: 'red', fontSize: '24px', fontWeight: 'bold' }}>DEBUG MARKER FOR PAGE</h1>
             <h1 className="text-2xl font-semibold mb-6">Enter Your Email</h1>
             <div className="space-y-4">
               <div>
@@ -26,6 +27,7 @@ export default function EmailPreferencesPage() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -34,15 +36,16 @@ export default function EmailPreferencesPage() {
                 />
               </div>
               <button
-                type="submit"
+                onClick={handleContinue}
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                disabled={!email}
               >
                 Continue
               </button>
             </div>
-          </form>
+          </div>
         ) : (
-          <EmailPreferencesForm email={email} />
+          <EmailPreferencesForm email={submittedEmail} />
         )}
       </div>
     </div>

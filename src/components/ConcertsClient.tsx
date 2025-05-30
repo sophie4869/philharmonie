@@ -28,6 +28,7 @@ export default function ConcertsClient({
     const [showContact, setShowContact] = useState(false);
     const [showEmailPreferences, setShowEmailPreferences] = useState(false);
     const [email, setEmail] = useState('');
+    const [isEmailSubmitted, setIsEmailSubmitted] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [areAllCardsFlipped, setAreAllCardsFlipped] = useState(false);
 
@@ -71,8 +72,6 @@ export default function ConcertsClient({
     useEffect(() => {
         console.log("Selected category:", category);
     }, [category]);
-
-    console.log("Future concert categories:", futureConcerts.map(c => c.category));
 
     const filtered = futureConcerts.filter((c) => {
         // DEBUG: Log each comparison
@@ -420,24 +419,22 @@ export default function ConcertsClient({
             {/* Email Preferences Modal */}
             {showEmailPreferences && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className={`rounded-lg shadow-lg p-6 max-w-2xl w-full border-2 ${paletteClasses.border} ${!email ? paletteClasses.card : paletteClasses.bg} relative`}>
+                    <div className={`rounded-lg shadow-lg p-6 max-w-2xl w-full border-2 ${paletteClasses.border} ${isEmailSubmitted ? paletteClasses.bg : paletteClasses.card} relative`}>
                         <button
                             className="absolute top-2 right-3 text-2xl font-bold focus:outline-none"
                             onClick={() => {
                                 setShowEmailPreferences(false);
                                 setEmail('');
+                                setIsEmailSubmitted(false);
                             }}
                             aria-label="Close"
                         >
                             ×
                         </button>
-                        {!email ? (
+                        {!isEmailSubmitted ? (
                             <form onSubmit={(e) => {
                                 e.preventDefault();
-                                if (email) {
-                                    // Email will be validated by the browser's built-in validation
-                                    // since we're using type="email"
-                                }
+                                setIsEmailSubmitted(true);
                             }} className="space-y-6">
                                 <div className="flex items-center space-x-2 mb-6">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-blue-600">
@@ -474,6 +471,7 @@ export default function ConcertsClient({
                                 onSave={() => {
                                     setShowEmailPreferences(false);
                                     setEmail('');
+                                    setIsEmailSubmitted(false);
                                 }}
                             />
                         )}
