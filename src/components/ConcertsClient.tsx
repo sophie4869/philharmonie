@@ -352,7 +352,7 @@ export default function ConcertsClient({
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <span>✉️</span>
-                                    <span>Questions or feedback? Please contact <a href="mailto:sophie4869@gmail.com" className={`underline ${paletteClasses.text}`}>sophie4869@gmail.com</a>.</span>
+                                    <span>Questions or feedback? Please contact <a href="mailto:dmin@sophiebi.com" className={`underline ${paletteClasses.text}`}>dmin@sophiebi.com</a>.</span>
                                 </div>
                             </div>
                         </div>

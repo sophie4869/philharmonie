@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import { fetchConcerts } from '../../../utils/scraping';
 import { connectToDatabase } from '../../../lib/mongodb';
 import { checkConcert } from '../../../utils/checkConcert';
+import { Concert } from '@/lib/models/Concert';
+import mongoose from 'mongoose';
 
 export async function POST() {
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection('concerts');
+    await connectToDatabase();
     let processedCount = 0;
     let skippedCount = 0;
     let missingProgramCount = 0;
@@ -24,18 +25,13 @@ export async function POST() {
         if (concert.musicians.length === 0) delete updateFields.musicians;
 
         totalConcerts++;
-        const result = await collection.updateOne(
+        const result = await Concert.findOneAndUpdate(
           { title: concert.title, date: concert.date },
           { $set: updateFields },
-          { upsert: true }
+          { upsert: true, new: true }
         );
         
-        if (result.upsertedCount > 0) {
-          processedCount++;
-          if (concert.program.length === 0) {
-            missingProgramCount++;
-          }
-        } else if (result.modifiedCount > 0) {
+        if (result) {
           processedCount++;
           if (concert.program.length === 0) {
             missingProgramCount++;
@@ -44,7 +40,7 @@ export async function POST() {
           skippedCount++;
         }
       },
-      collection
+      mongoose.connection.collection('concerts')
     );
 
     return NextResponse.json({ 
@@ -65,9 +61,8 @@ export async function POST() {
 
 export async function GET() {
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection('concerts');
-    const concerts = await collection.find({}).sort({ date: 1 }).toArray();
+    await connectToDatabase();
+    const concerts = await Concert.find({}).sort({ date: 1 }).lean();
     return NextResponse.json({ success: true, concerts });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });

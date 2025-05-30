@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb';
+import { Concert } from '@/lib/models/Concert';
 
 export async function POST() {
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection('concerts');
+    await connectToDatabase();
     
     // Get all concerts
-    const concerts = await collection.find({}).toArray();
+    const concerts = await Concert.find({}).lean();
     let updatedCount = 0;
 
     // Update each concert's category
@@ -20,8 +20,8 @@ export async function POST() {
           .trim(); // Trim again after replacements
 
         if (cleanedCategory !== concert.category) {
-          await collection.updateOne(
-            { _id: concert._id },
+          await Concert.findByIdAndUpdate(
+            concert._id,
             { $set: { category: cleanedCategory } }
           );
           updatedCount++;
