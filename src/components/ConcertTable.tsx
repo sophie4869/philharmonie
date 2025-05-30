@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ProgramItem, Musician } from '../utils/scraping';
 import { PALETTE_CONFIG } from './PaletteWrapper';
+import Image from 'next/image';
 
 interface ConcertTableProps {
   concerts: {
@@ -88,10 +89,12 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
             {sortedConcerts.map((concert, idx) => (
               <tr key={idx} className={`font-sans border-t ${paletteClasses.border} hover:bg-opacity-10 ${palette === 'blue' ? 'hover:bg-bluesecondary' : 'hover:bg-peachsecondary'} ${idx === 0 ? 'first:rounded-t-lg' : ''} ${idx === sortedConcerts.length - 1 ? 'last:rounded-b-lg' : ''}`}>
                 <td className="p-2 rounded-l-lg">
-                  <img
-                    src={concert.image_url}
+                  <Image 
+                    src={concert.image_url} 
                     alt={concert.title}
-                    className={`w-24 h-16 object-cover rounded border-2 ${paletteClasses.border}`}
+                    width={100}
+                    height={67}
+                    className="w-24 h-16 object-cover rounded"
                   />
                 </td>
                 <td className={`p-2 font-semibold font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.title}</td>

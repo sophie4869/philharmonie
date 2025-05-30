@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ProgramItem, Musician } from '../utils/scraping';
 import { PALETTE_CONFIG } from './PaletteWrapper';
+import Image from 'next/image';
 
 interface ConcertCardProps {
   concert: {
@@ -31,10 +32,12 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
             ? 'bg-bluecard border-blueheadline'
             : 'bg-peachcard border-peachheadline'
         }`}>
-          <img
-            src={concert.image_url}
+          <Image 
+            src={concert.image_url} 
             alt={concert.title}
-            className={`w-full h-48 object-cover rounded mb-4 border-2 ${palette === 'blue' ? 'border-blueheadline' : 'border-peachheadline'}`}
+            width={300}
+            height={200}
+            className="w-full h-48 object-cover"
           />
           <div className="flex-1 flex flex-col">
             <h3 className={`text-lg font-bold mb-1 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.title}</h3>

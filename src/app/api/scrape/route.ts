@@ -17,8 +17,8 @@ export async function POST() {
         const existing = await collection.findOne({
           title: concert.title,
           date: concert.date,
-          program: { $exists: true, $ne: [] },
-          musicians: { $exists: true }
+          program: { $exists: true, $not: { $size: 0 } },
+          musicians: { $exists: true, $not: { $size: 0 } }
         });
         
         
@@ -26,10 +26,18 @@ export async function POST() {
       },
       // Save concert to database
       async (concert) => {
+        // Log the length of program and musicians found
+        console.log(`[API] ${concert.title} (${concert.date}): program.length=${concert.program.length}, musicians.length=${concert.musicians.length}`);
+
+        // Only update program/musicians if new data is non-empty
+        const updateFields = { ...concert };
+        if (concert.program.length === 0) delete updateFields.program;
+        if (concert.musicians.length === 0) delete updateFields.musicians;
+
         totalConcerts++;
         const result = await collection.updateOne(
           { title: concert.title, date: concert.date },
-          { $set: concert },
+          { $set: updateFields },
           { upsert: true }
         );
         

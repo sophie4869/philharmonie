@@ -70,7 +70,7 @@ export default function PaletteWrapper({ children }: { children: React.ReactNode
       </div>
       <div className="max-w-7xl mx-auto px-4">
         {React.isValidElement(children)
-          ? React.cloneElement(children as React.ReactElement<any>, { palette, setPalette })
+          ? React.cloneElement(children as React.ReactElement<{ palette: PaletteKey; setPalette: (palette: PaletteKey) => void }>, { palette, setPalette })
           : children}
       </div>
     </div>

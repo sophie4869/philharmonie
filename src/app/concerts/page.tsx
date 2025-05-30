@@ -1,9 +1,10 @@
 import ConcertsClient from "../../components/ConcertsClient";
 import { connectToDatabase } from "../../lib/mongodb";
-import { ProgramItem } from "../../utils/scraping";
+import { Concert, ProgramItem, Musician } from "../../utils/scraping";
 import PaletteWrapper from '../../components/PaletteWrapper';
+import { Document, WithId } from 'mongodb';
 
-interface Concert {
+interface ConcertDocument extends Document {
   title: string;
   description: string;
   location: string;
@@ -13,15 +14,29 @@ interface Concert {
   date: string;
   category: string;
   program: ProgramItem[];
+  musicians: Musician[];
+  status: 'available' | 'few_remaining' | 'sold_out';
 }
 
 async function getConcerts(): Promise<Concert[]> {
   const { db } = await connectToDatabase();
-  const concerts = await db.collection("concerts").find({}).sort({ date: 1 }).toArray();
+  const concertsFromDB = await db.collection("concerts").find({}).sort({ date: 1 }).toArray();
 
-  return concerts.map((concert) => {
-    const entries = Object.entries(concert).filter(([key]) => key !== "_id");
-    return Object.fromEntries(entries) as Concert;
+  return concertsFromDB.map((dbConcert: WithId<ConcertDocument>) => {
+    const { ...restOfConcert } = dbConcert;
+    return {
+      title: restOfConcert.title || '',
+      description: restOfConcert.description || '',
+      location: restOfConcert.location || '',
+      image_url: restOfConcert.image_url || '',
+      booking_url: restOfConcert.booking_url || '',
+      prices: restOfConcert.prices || [],
+      date: String(restOfConcert.date || ''),
+      category: restOfConcert.category || '',
+      program: restOfConcert.program || [],
+      musicians: restOfConcert.musicians || [],
+      status: restOfConcert.status || 'available',
+    } as Concert;
   });
 }
 
