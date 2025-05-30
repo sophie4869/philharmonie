@@ -193,7 +193,11 @@ async function fetchConcerts(
       } else if (statusText.includes('sold out') || statusText.includes('complet')) {
         status = 'sold_out';
       }
-      const category = (card.querySelector('.EventCard-category')?.textContent || '').trim();
+      const category = (card.querySelector('.EventCard-category')?.textContent || '')
+        .trim()
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .replace(/\n/g, ' ') // Replace newlines with space
+        .trim(); // Trim again after replacements
       
       if (bookingSuffix) {
         results.push({
