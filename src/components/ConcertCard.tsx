@@ -42,9 +42,9 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
           <div className="flex-1 flex flex-col">
             <h3 className={`text-lg font-bold mb-1 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.title}</h3>
             <div className={`text-base font-semibold mb-1 font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.category}</div>
-            <div className={`text-sm font-sans mb-2 ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.location}</div>
-            <div className={`text-xs font-sans mb-2 ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.date.slice(0, 10)} {concert.date.slice(11, 16)}</div>
-            <p className={`text-sm font-sans mb-2 line-clamp-3 ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.description}</p>
+            <div className={`text-[15px] font-medium mb-1 font-sans tracking-wide ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.location}</div>
+            <div className={`text-xs font-light italic mb-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.date.slice(0, 10)} {concert.date.slice(11, 16)}</div>
+            <p className={`text-sm font-normal mb-2 line-clamp-3 font-sans leading-relaxed ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.description}</p>
             <div className="mt-auto flex flex-col gap-2">
               {concert.prices.length > 0 && (
                 <div className={`text-xs font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>Prices: {concert.prices.join(', ')} €</div>
