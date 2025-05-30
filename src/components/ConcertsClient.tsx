@@ -114,7 +114,7 @@ export default function ConcertsClient({
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
-            <h1 className={`text-3xl font-bold mb-6 font-sans ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>Philharmonie de Paris Concerts</h1>
+            <h1 className={`text-3xl font-bold mb-6 font-sans ${paletteClasses.text}`}>Philharmonie de Paris Concerts</h1>
             <div className={`flex flex-col gap-2 mb-6 p-4 rounded-lg border-2 ${paletteClasses.border} bg-cream`}>
                 <div className="flex flex-wrap w-full gap-4">
                   <select
@@ -228,7 +228,7 @@ export default function ConcertsClient({
             ) : view === "table" ? (
                 <ConcertTable concerts={filtered} palette={palette} />
             ) : (
-                <div className={`flex flex-col gap-4 rounded-lg p-4 border-2 ${paletteClasses.border} ${palette === 'blue' ? 'bg-white' : 'bg-peachcard'}`}>
+                <div className={`flex flex-col gap-4 rounded-lg p-4 border-2 ${paletteClasses.border} ${paletteClasses.bg}`}>
                     <div className="flex justify-between items-center">
                         <div className="flex gap-2">
                             <button
@@ -258,7 +258,7 @@ export default function ConcertsClient({
                                 →
                             </button>
                         </div>
-                        <div className={`text-xl font-bold ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>
+                        <div className={`text-xl font-bold ${paletteClasses.headline}`}>
                             {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
                         </div>
                         <button
@@ -279,7 +279,7 @@ export default function ConcertsClient({
                     </div>
                     <div className="grid grid-cols-7 gap-2">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                            <div key={day} className={`text-center font-semibold p-2 ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>
+                            <div key={day} className={`text-center font-semibold p-2 ${paletteClasses.text}`}>
                                 {day}
                             </div>
                         ))}
@@ -288,11 +288,9 @@ export default function ConcertsClient({
                                 key={idx}
                                 className={`min-h-[100px] p-2 border rounded ${
                                     day.isCurrentMonth
-                                        ? palette === 'blue'
-                                            ? 'border-blueheadline'
-                                            : 'border-peachheadline'
+                                        ? paletteClasses.border
                                         : 'border-gray-200'
-                                } ${day.isToday ? 'bg-bluehighlight/20' : ''}`}
+                                } ${day.isToday ? `${paletteClasses.bg}/20` : ''}`}
                             >
                                 <div className={`text-sm font-semibold mb-1 ${day.isCurrentMonth ? '' : 'text-gray-400'}`}>
                                     {day.date.getDate()}
@@ -300,10 +298,8 @@ export default function ConcertsClient({
                                 {day.concerts.map((concert, concertIdx) => (
                                     <div
                                         key={concertIdx}
-                                        className={`text-xs p-1 mb-1 rounded cursor-pointer ${
-                                            palette === 'blue'
-                                                ? 'bg-bluehighlight/20 hover:bg-bluehighlight/30'
-                                                : 'bg-peachhighlight/20 hover:bg-peachhighlight/30'
+                                        className={`text-xs p-1 mb-1 rounded cursor-pointer ${paletteClasses.text} ${
+                                            `bg-${palette}highlight/20 hover:bg-${palette}highlight/30`
                                         }`}
                                         onClick={() => window.open(concert.booking_url, '_blank')}
                                     >
@@ -321,7 +317,7 @@ export default function ConcertsClient({
             {/* Contact/About Modal */}
             {showContact && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className={`rounded-lg shadow-lg p-6 max-w-md w-full border-2 ${paletteClasses.border} ${palette === 'blue' ? 'bg-white' : 'bg-peachcard'} relative`}>
+                    <div className={`rounded-lg shadow-lg p-6 max-w-md w-full border-2 ${paletteClasses.border} ${paletteClasses.bg} relative`}>
                         <button
                             className="absolute top-2 right-3 text-2xl font-bold focus:outline-none"
                             onClick={() => setShowContact(false)}
@@ -329,7 +325,7 @@ export default function ConcertsClient({
                         >
                             ×
                         </button>
-                        <div className={`text-lg font-bold mb-4 font-sans ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>About</div>
+                        <div className={`text-lg font-bold mb-4 font-sans ${paletteClasses.text}`}>About</div>
                         <div className="flex flex-col gap-4 text-base font-sans">
                             <div className="flex items-start gap-2">
                                 <span>🎻</span>
@@ -351,7 +347,7 @@ export default function ConcertsClient({
                             </div>
                             <div className="flex items-start gap-2">
                                 <span>✉️</span>
-                                <span>Questions or feedback? Please contact <a href="mailto:sophie4869@gmail.com" className={`underline ${palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'}`}>sophie4869@gmail.com</a>.</span>
+                                <span>Questions or feedback? Please contact <a href="mailto:sophie4869@gmail.com" className={`underline ${paletteClasses.text}`}>sophie4869@gmail.com</a>.</span>
                             </div>
                         </div>
                     </div>

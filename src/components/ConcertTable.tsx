@@ -28,7 +28,7 @@ interface ConcertTableProps {
 // Helper function to check if a musician is a person
 function isPersonMusician(name: string): boolean {
   // Exclude names with d', de, or only one word not capitalized
-  if (/\bd['’]?( |$)/i.test(name) || /\bde( |$)/i.test(name)) return false;
+  if (/\bd['']?( |$)/i.test(name) || /\bde( |$)/i.test(name)) return false;
   const parts = name.trim().split(' ');
   if (parts.length === 1 && name[0] === name[0].toLowerCase()) return false;
   // Exclude names that are all lowercase or all uppercase
@@ -87,7 +87,7 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
           </thead>
           <tbody>
             {sortedConcerts.map((concert, idx) => (
-              <tr key={idx} className={`font-sans border-t ${paletteClasses.border} hover:bg-opacity-10 ${palette === 'blue' ? 'hover:bg-bluesecondary' : 'hover:bg-peachsecondary'} ${idx === 0 ? 'first:rounded-t-lg' : ''} ${idx === sortedConcerts.length - 1 ? 'last:rounded-b-lg' : ''}`}>
+              <tr key={idx} className={`font-sans border-t ${paletteClasses.border} bg-white hover:bg-gray-100 ${idx === 0 ? 'first:rounded-t-lg' : ''} ${idx === sortedConcerts.length - 1 ? 'last:rounded-b-lg' : ''}`}>
                 <td className="p-2 rounded-l-lg">
                   <Image 
                     src={concert.image_url} 
@@ -97,11 +97,11 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
                     className="w-24 h-16 object-cover rounded"
                   />
                 </td>
-                <td className={`p-2 font-semibold font-sans ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>{concert.title}</td>
-                <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{new Date(concert.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
-                <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'} min-w-[200px]`}>{getComposerSummary(concert.program)}</td>
-                <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'} min-w-[250px]`}>{getMusicianSummary(concert.musicians)}</td>
-                <td className={`p-2 font-sans ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>{concert.prices.join(', ')}</td>
+                <td className={`p-2 font-semibold font-sans ${paletteClasses.cardheading}`}>{concert.title}</td>
+                <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{new Date(concert.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
+                <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[200px]`}>{getComposerSummary(concert.program)}</td>
+                <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[250px]`}>{getMusicianSummary(concert.musicians)}</td>
+                <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{concert.prices.join(', ')}</td>
                 <td className="p-2 rounded-r-lg">
                   <div className="flex gap-2">
                     <a
@@ -129,26 +129,22 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
       {/* Program Modal */}
       {selectedConcert && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className={`relative max-w-2xl w-full rounded-lg shadow-lg p-6 ${
-            palette === 'blue' ? 'bg-bluecard' : 'bg-peachcard'
-          }`}>
+          <div className={`relative max-w-2xl w-full rounded-lg shadow-lg p-6 ${paletteClasses.card}`}>
             <button
               onClick={() => setSelectedConcert(null)}
-              className={`absolute top-4 right-4 text-2xl font-bold ${
-                palette === 'blue' ? 'text-blueheadline' : 'text-peachheadline'
-              }`}
+              className={`absolute top-4 right-4 text-2xl font-bold ${paletteClasses.headline}`}
             >
               ×
             </button>
-            <h2 className={`text-xl font-bold mb-4 ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>
+            <h2 className={`text-xl font-bold mb-4 ${paletteClasses.cardheading}`}>
               {selectedConcert.title}
             </h2>
             {selectedConcert.musicians.length > 0 && (
               <>
-                <h3 className={`text-lg font-bold mb-2 ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>Musicians</h3>
+                <h3 className={`text-lg font-bold mb-2 ${paletteClasses.cardheading}`}>Musicians</h3>
                 <div className="space-y-2 mb-4">
                   {selectedConcert.musicians.map((musician, index) => (
-                    <div key={index} className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
+                    <div key={index} className={`text-sm ${paletteClasses.cardpara}`}>
                       <span className="font-semibold">{musician.name}</span>
                       {musician.role && <span className="italic">, {musician.role}</span>}
                     </div>
@@ -156,27 +152,27 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
                 </div>
               </>
             )}
-            <h3 className={`text-lg font-bold mb-2 ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>Program</h3>
+            <h3 className={`text-lg font-bold mb-2 ${paletteClasses.cardheading}`}>Program</h3>
             {selectedConcert.program.length > 0 ? (
               <div className="space-y-4">
                 {selectedConcert.program.map((item, index) => (
                   <div key={index} className="mb-4">
                     {item.isIntermission ? (
-                      <div className={`text-sm font-semibold ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
+                      <div className={`text-sm font-semibold ${paletteClasses.cardpara}`}>
                         {item.title}
                       </div>
                     ) : (
                       <>
                         {item.composer && (
-                          <div className={`text-sm font-semibold ${palette === 'blue' ? 'text-bluecardheading' : 'text-peachcardheading'}`}>
+                          <div className={`text-sm font-semibold ${paletteClasses.cardheading}`}>
                             {item.composer}
                           </div>
                         )}
-                        <div className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
+                        <div className={`text-sm ${paletteClasses.cardpara}`}>
                           {item.title}
                         </div>
                         {item.details && (
-                          <div className={`text-xs italic ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
+                          <div className={`text-xs italic ${paletteClasses.cardpara}`}>
                             {item.details}
                           </div>
                         )}
@@ -186,7 +182,7 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
                 ))}
               </div>
             ) : (
-              <div className={`text-sm ${palette === 'blue' ? 'text-bluecardpara' : 'text-peachcardpara'}`}>
+              <div className={`text-sm ${paletteClasses.cardpara}`}>
                 Program not yet available
               </div>
             )}
