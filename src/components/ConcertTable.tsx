@@ -18,11 +18,11 @@ interface ConcertTableProps {
   palette?: 'blue' | 'peach';
 }
 
-// Helper function to get last names
-function getLastName(fullName: string): string {
-  const parts = fullName.split(' ');
-  return parts[parts.length - 1];
-}
+// // Helper function to get last names
+// function getLastName(fullName: string): string {
+//   const parts = fullName.split(' ');
+//   return parts[parts.length - 1];
+// }
 
 // Helper function to check if a musician is a person
 function isPersonMusician(name: string): boolean {
@@ -63,21 +63,11 @@ function getMusicianSummary(musicians: Musician[]): string {
 }
 
 export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTableProps) {
-  const [futureConcerts, setFutureConcerts] = useState<typeof concerts>([]);
   const [selectedConcert, setSelectedConcert] = useState<typeof concerts[0] | null>(null);
   const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
 
-  useEffect(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const filteredAndSorted = concerts
-      .filter(concert => {
-        const concertDate = new Date(concert.date);
-        return concertDate >= today;
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    setFutureConcerts(filteredAndSorted);
-  }, [concerts]);
+  // Use concerts as passed in (already filtered for future concerts)
+  const sortedConcerts = concerts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
     <>
@@ -95,8 +85,8 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
             </tr>
           </thead>
           <tbody>
-            {futureConcerts.map((concert, idx) => (
-              <tr key={idx} className={`font-sans border-t ${paletteClasses.border} hover:bg-opacity-10 ${palette === 'blue' ? 'hover:bg-bluesecondary' : 'hover:bg-peachsecondary'} ${idx === 0 ? 'first:rounded-t-lg' : ''} ${idx === futureConcerts.length - 1 ? 'last:rounded-b-lg' : ''}`}>
+            {sortedConcerts.map((concert, idx) => (
+              <tr key={idx} className={`font-sans border-t ${paletteClasses.border} hover:bg-opacity-10 ${palette === 'blue' ? 'hover:bg-bluesecondary' : 'hover:bg-peachsecondary'} ${idx === 0 ? 'first:rounded-t-lg' : ''} ${idx === sortedConcerts.length - 1 ? 'last:rounded-b-lg' : ''}`}>
                 <td className="p-2 rounded-l-lg">
                   <img
                     src={concert.image_url}

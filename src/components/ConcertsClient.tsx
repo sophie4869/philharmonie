@@ -15,6 +15,7 @@ interface Concert {
     date: string;
     category: string;
     program: ProgramItem[];
+    musicians: { name: string }[];
 }
 
 export default function ConcertsClient({
@@ -33,10 +34,8 @@ export default function ConcertsClient({
     const [category, setCategory] = useState("");
     const [composer, setComposer] = useState("");
     const [musician, setMusician] = useState("");
-    const [director, setDirector] = useState("");
     const [showComposerSuggestions, setShowComposerSuggestions] = useState(false);
     const [showMusicianSuggestions, setShowMusicianSuggestions] = useState(false);
-    const [showDirectorSuggestions, setShowDirectorSuggestions] = useState(false);
 
     useEffect(() => {
         // Set initial view from localStorage on client mount
@@ -50,34 +49,39 @@ export default function ConcertsClient({
         localStorage.setItem("concertsView", view);
     }, [view]);
 
-    // Extract unique composers, musicians, directors
+    // Only show future concerts
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const futureConcerts = concerts.filter(c => {
+        const concertDate = new Date(c.date);
+        return concertDate >= today;
+    });
+
+    // Extract unique composers, musicians
     const composerOptions = useMemo(() => {
         const set = new Set<string>();
-        concerts.forEach(c => c.program.forEach(item => {
+        futureConcerts.forEach(c => c.program.forEach(item => {
             if (item.composer) set.add(item.composer);
         }));
         return Array.from(set).sort();
-    }, [concerts]);
+    }, [futureConcerts]);
     const musicianOptions = useMemo(() => {
         const set = new Set<string>();
-        concerts.forEach(c => c.program.forEach(item => {
-            if (item.details) {
-                // Split by common separators
-                item.details.split(/[;,\n]/).forEach(part => {
-                    const trimmed = part.trim();
-                    if (trimmed) set.add(trimmed);
-                });
-            }
+        futureConcerts.forEach(c => c.musicians.forEach(m => {
+            if (m.name) set.add(m.name);
         }));
         return Array.from(set).sort();
-    }, [concerts]);
-    const directorOptions = musicianOptions; // For now, use same as musician (can refine if needed)
+    }, [futureConcerts]);
 
-    const filtered = concerts.filter((c) => {
+    const filtered = futureConcerts.filter((c) => {
         const matchesSearch =
             c.title.toLowerCase().includes(search.toLowerCase()) ||
             c.description.toLowerCase().includes(search.toLowerCase()) ||
-            c.location.toLowerCase().includes(search.toLowerCase());
+            c.location.toLowerCase().includes(search.toLowerCase()) ||
+            c.program.some(item => 
+                item.title.toLowerCase().includes(search.toLowerCase()) ||
+                (item.details?.toLowerCase().includes(search.toLowerCase()) ?? false)
+            );
         const matchesCategory = category ? c.category === category : true;
         
         // Check if any program item matches the composer filter
@@ -85,17 +89,12 @@ export default function ConcertsClient({
             item.composer?.toLowerCase().includes(composer.toLowerCase())
         ) : true;
 
-        // Check if any program item's details match the musician filter
-        const matchesMusician = musician ? c.program.some(item => 
-            item.details?.toLowerCase().includes(musician.toLowerCase())
+        // Check if any musician matches the musician filter
+        const matchesMusician = musician ? c.musicians.some(m => 
+            m.name.toLowerCase().includes(musician.toLowerCase())
         ) : true;
 
-        // Check if any program item's details match the director filter
-        const matchesDirector = director ? c.program.some(item => 
-            item.details?.toLowerCase().includes(director.toLowerCase())
-        ) : true;
-
-        return matchesSearch && matchesCategory && matchesComposer && matchesMusician && matchesDirector;
+        return matchesSearch && matchesCategory && matchesComposer && matchesMusician;
     });
 
     const paletteKeys = Object.keys(PALETTE_CONFIG);
@@ -158,24 +157,6 @@ export default function ConcertsClient({
                       <ul className="absolute z-10 bg-white border border-blueheadline rounded w-full max-h-40 overflow-y-auto shadow-lg">
                         {musicianOptions.filter(opt => opt.toLowerCase().includes(musician.toLowerCase())).slice(0, 10).map(opt => (
                           <li key={opt} className="px-3 py-1 cursor-pointer hover:bg-bluehighlight/20" onMouseDown={() => { setMusician(opt); setShowMusicianSuggestions(false); }}>{opt}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  <div className="relative flex-1 min-w-[140px]">
-                    <input
-                        type="text"
-                        placeholder="Filter by director..."
-                        value={director}
-                        onChange={(e) => { setDirector(e.target.value); setShowDirectorSuggestions(true); }}
-                        onFocus={() => setShowDirectorSuggestions(true)}
-                        onBlur={() => setTimeout(() => setShowDirectorSuggestions(false), 100)}
-                        className={`border-2 rounded px-3 py-2 w-full bg-cream font-sans text-navy focus:outline-none focus:ring-2 ${paletteClasses.border}`}
-                    />
-                    {showDirectorSuggestions && director && (
-                      <ul className="absolute z-10 bg-white border border-blueheadline rounded w-full max-h-40 overflow-y-auto shadow-lg">
-                        {directorOptions.filter(opt => opt.toLowerCase().includes(director.toLowerCase())).slice(0, 10).map(opt => (
-                          <li key={opt} className="px-3 py-1 cursor-pointer hover:bg-bluehighlight/20" onMouseDown={() => { setDirector(opt); setShowDirectorSuggestions(false); }}>{opt}</li>
                         ))}
                       </ul>
                     )}

@@ -23,7 +23,7 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
   const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
 
   return (
-    <div className="relative h-full min-h-[500px] perspective-1000">
+    <div className="relative h-full min-h-[550px] perspective-1000">
       <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
         {/* Front of card */}
         <div className={`absolute w-full h-full backface-hidden rounded-lg shadow-md p-4 flex flex-col border-2 font-sans ${
