@@ -182,7 +182,7 @@ export default function ConcertsClient({
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2 ml-auto items-center">
+                <div className="flex gap-2 ml-auto items-center mt-3">
                     {/* View controls */}
                     <button
                         className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${view === 'card' ? paletteClasses.buttonActive : paletteClasses.button}`}
@@ -381,7 +381,7 @@ export default function ConcertsClient({
             {/* Email Preferences Modal */}
             {showEmailPreferences && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className={`rounded-lg shadow-lg p-6 max-w-2xl w-full border-2 ${paletteClasses.border} ${paletteClasses.bg} relative`}>
+                    <div className={`rounded-lg shadow-lg p-6 max-w-2xl w-full border-2 ${paletteClasses.border} ${!email ? paletteClasses.card : paletteClasses.bg} relative`}>
                         <button
                             className="absolute top-2 right-3 text-2xl font-bold focus:outline-none"
                             onClick={() => {
