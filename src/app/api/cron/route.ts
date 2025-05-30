@@ -6,7 +6,7 @@ import { sendDigestForAllMusicians, sendAlert } from '@/lib/email';
 import { parse, isAfter } from 'date-fns';
 
 // Verify the request is from Vercel Cron
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 async function checkNewConcerts() {
   console.log('Checking for new concerts...');
