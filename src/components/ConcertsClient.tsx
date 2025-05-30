@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import ConcertCard from "./ConcertCard";
 import ConcertTable from "./ConcertTable";
-import { ProgramItem } from "../utils/scraping";
 import { PALETTE_CONFIG } from "./PaletteWrapper";
 import { generateICS, getCalendarDays } from "../utils/calendar";
 import { Concert } from "../lib/types";

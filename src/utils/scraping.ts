@@ -1,5 +1,6 @@
 import * as puppeteer from 'puppeteer';
 import { writeFileSync } from 'fs';
+import { Collection } from 'mongodb';
 
 export interface Musician {
   name: string;
@@ -99,12 +100,12 @@ async function fetchProgramDetails(page: puppeteer.Page, url: string): Promise<{
   return { program: programItems, musicians: musicianItems };
 }
 
-type ConcertCheckFunction = (collection: any, concert: Partial<Concert>) => Promise<boolean>;
+type ConcertCheckFunction = (collection: Collection, concert: Partial<Concert>) => Promise<boolean>;
 
 async function fetchConcerts(
   checkExistingConcert: ConcertCheckFunction,
   onConcertComplete: (concert: Concert) => Promise<void>,
-  collection: any
+  collection: Collection
 ): Promise<void> {
   console.log('Starting concert scraping with "Next days" click strategy...');
   const browser = await puppeteer.launch({ headless: true });
