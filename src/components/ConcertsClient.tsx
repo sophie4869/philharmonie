@@ -330,28 +330,30 @@ export default function ConcertsClient({
                             ×
                         </button>
                         <div className={`text-lg font-bold mb-4 font-sans ${paletteClasses.text}`}>About</div>
-                        <div className="flex flex-col gap-4 text-base font-sans">
-                            <div className="flex items-start gap-2">
-                                <span>🎻</span>
-                                <span>This site is created to help music lovers explore concerts at the Philharmonie de Paris without scrolling endlessly.</span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <span>🔎</span>
-                                <span>Offers better search, filters, calendar view, and email alerts.</span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <span>🛠️</span>
-                                <span>Not affiliated with the Philharmonie de Paris. <span className="italic">All concert data is automatically scraped from the <a href="https://philharmoniedeparis.fr/en" target="_blank" rel="noopener noreferrer" className="underline">official Philharmonie website</a>.</span></span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <span>❤️</span>
-                                <span>Made with love by Sophie Bi, a software engineer, photographer and classical music enthusiast.
-                                    See <a href="https://sophiebi.com" target="_blank" rel="noopener noreferrer" className="underline">more of my work</a>.<br />
-                                </span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <span>✉️</span>
-                                <span>Questions or feedback? Please contact <a href="mailto:sophie4869@gmail.com" className={`underline ${paletteClasses.text}`}>sophie4869@gmail.com</a>.</span>
+                        <div className={`${paletteClasses.card} border-2 ${paletteClasses.border} rounded-lg p-4`}>
+                            <div className="flex flex-col gap-4 text-base font-sans">
+                                <div className="flex items-start gap-2">
+                                    <span>🎻</span>
+                                    <span>This site is created to help music lovers explore concerts at the Philharmonie de Paris without scrolling endlessly.</span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <span>🔎</span>
+                                    <span>Offers better search, filters, calendar view, and email alerts.</span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <span>🛠️</span>
+                                    <span>Not affiliated with the Philharmonie de Paris. <span className="italic">All concert data is automatically scraped from the <a href="https://philharmoniedeparis.fr/en" target="_blank" rel="noopener noreferrer" className="underline">official Philharmonie website</a>.</span></span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <span>❤️</span>
+                                    <span>Made with love by Sophie Bi, a software engineer, photographer and classical music enthusiast.
+                                        See <a href="https://sophiebi.com" target="_blank" rel="noopener noreferrer" className="underline">more of my work</a>.<br />
+                                    </span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <span>✉️</span>
+                                    <span>Questions or feedback? Please contact <a href="mailto:sophie4869@gmail.com" className={`underline ${paletteClasses.text}`}>sophie4869@gmail.com</a>.</span>
+                                </div>
                             </div>
                         </div>
                     </div>
