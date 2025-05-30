@@ -99,11 +99,12 @@ async function fetchProgramDetails(page: puppeteer.Page, url: string): Promise<{
   return { program: programItems, musicians: musicianItems };
 }
 
-type ConcertCheckFunction = (concert: Partial<Concert>) => Promise<boolean>;
+type ConcertCheckFunction = (collection: any, concert: Partial<Concert>) => Promise<boolean>;
 
 async function fetchConcerts(
   checkExistingConcert: ConcertCheckFunction,
-  onConcertComplete: (concert: Concert) => Promise<void>
+  onConcertComplete: (concert: Concert) => Promise<void>,
+  collection: any
 ): Promise<void> {
   console.log('Starting concert scraping with "Next days" click strategy...');
   const browser = await puppeteer.launch({ headless: true });
@@ -266,7 +267,7 @@ async function fetchConcerts(
 
     console.log(`[${i + 1}/${concerts.length}] Processing: ${concert.title}`); // Minimal log
 
-    const needsProgram = !(await checkExistingConcert(concert));
+    const needsProgram = !(await checkExistingConcert(collection, concert));
     let skipUpdate = false;
     if (needsProgram) {
       try {

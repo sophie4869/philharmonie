@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { fetchConcerts } from '../../../utils/scraping';
 import { connectToDatabase } from '../../../lib/mongodb';
+import { checkConcert } from '../../../utils/checkConcert';
 
 export async function POST() {
   try {
@@ -12,19 +13,7 @@ export async function POST() {
     let totalConcerts = 0;
 
     await fetchConcerts(
-      // Check if concert exists with program
-      async (concert) => {
-        const existing = await collection.findOne({
-          title: concert.title,
-          date: concert.date,
-          program: { $exists: true, $not: { $size: 0 } },
-          musicians: { $exists: true, $not: { $size: 0 } }
-        });
-        
-        
-        return !!existing;
-      },
-      // Save concert to database
+      checkConcert,
       async (concert) => {
         // Log the length of program and musicians found
         console.log(`[API] ${concert.title} (${concert.date}): program.length=${concert.program.length}, musicians.length=${concert.musicians.length}`);
@@ -54,7 +43,8 @@ export async function POST() {
         } else {
           skippedCount++;
         }
-      }
+      },
+      collection
     );
 
     return NextResponse.json({ 
