@@ -47,7 +47,7 @@ module.exports = {
         mintbg: "#abd1c6",
         mintheadline: "#004643",
         mintsub: "#0f3433",
-        mintcard: "#004643",
+        mintcard: "#e4f7ed",
         mintcardheading: "#fffffe",
         mintcardpara: "#abd1c6",
         mintstroke: "#001e1d",

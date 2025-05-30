@@ -286,7 +286,7 @@ export default function ConcertsClient({
                         {getCalendarDays(filtered, currentMonth).map((day, idx) => (
                             <div
                                 key={idx}
-                                className={`min-h-[100px] p-2 border rounded ${
+                                className={`min-h-[100px] p-2 border rounded ${paletteClasses.card} ${
                                     day.isCurrentMonth
                                         ? paletteClasses.border
                                         : 'border-gray-200'
