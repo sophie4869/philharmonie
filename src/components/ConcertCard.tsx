@@ -17,10 +17,11 @@ interface ConcertCardProps {
     musicians: Musician[];
   };
   palette: 'blue' | 'peach';
+  isFlipped: boolean;
+  onSetFlip: (flipped: boolean) => void;
 }
 
-export default function ConcertCard({ concert, palette }: ConcertCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+export default function ConcertCard({ concert, palette, isFlipped, onSetFlip }: ConcertCardProps) {
   const paletteClasses = PALETTE_CONFIG[palette] || PALETTE_CONFIG.blue;
 
   function formatConcertDate(dateString: string) {
@@ -67,7 +68,7 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
                   Book
                 </a>
                 <button
-                  onClick={() => setIsFlipped(true)}
+                  onClick={() => onSetFlip(true)}
                   className={`flex-1 font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
                 >
                   Program
@@ -118,7 +119,7 @@ export default function ConcertCard({ concert, palette }: ConcertCardProps) {
               <div className={`text-sm ${paletteClasses.cardpara}`}>Program not yet available</div>
             )}
             <button
-              onClick={() => setIsFlipped(false)}
+              onClick={() => onSetFlip(false)}
               className={`mt-auto font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
             >
               Back

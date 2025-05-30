@@ -29,6 +29,7 @@ export default function ConcertsClient({
     const [showEmailPreferences, setShowEmailPreferences] = useState(false);
     const [email, setEmail] = useState('');
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [areAllCardsFlipped, setAreAllCardsFlipped] = useState(false);
 
     useEffect(() => {
         // Set initial view from localStorage on client mount
@@ -200,6 +201,14 @@ export default function ConcertsClient({
                 </div>
                 <div className="flex gap-2 ml-auto items-center mt-3">
                     {/* View controls */}
+                    {view === 'card' && (
+                        <button
+                            className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition flex items-center gap-2 ${paletteClasses.border}`}
+                            onClick={() => setAreAllCardsFlipped(!areAllCardsFlipped)}
+                        >
+                            {areAllCardsFlipped ? 'Hide All Programs' : 'Show All Programs'}
+                        </button>
+                    )}
                     <button
                         className={`px-4 py-2 rounded font-semibold text-base font-sans border-2 transition ${view === 'card' ? paletteClasses.buttonActive : paletteClasses.button}`}
                         onClick={() => setView("card")}
@@ -262,7 +271,13 @@ export default function ConcertsClient({
                             <h2 className={`text-2xl font-bold mb-4 ${paletteClasses.headline}`}>{monthYear}</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                 {concertsInMonth.map((concert, idx) => (
-                                    <ConcertCard key={idx} concert={concert} palette={palette} />
+                                    <ConcertCard 
+                                        key={idx} 
+                                        concert={concert} 
+                                        palette={palette} 
+                                        isFlipped={areAllCardsFlipped} 
+                                        onSetFlip={setAreAllCardsFlipped} 
+                                    />
                                 ))}
                             </div>
                         </div>
