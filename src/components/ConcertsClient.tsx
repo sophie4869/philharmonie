@@ -15,7 +15,7 @@ interface Concert {
     date: string;
     category: string;
     program: ProgramItem[];
-    musicians: { name: string }[];
+    musicians: { name: string; role?: string }[];
 }
 
 export default function ConcertsClient({
@@ -74,14 +74,36 @@ export default function ConcertsClient({
     }, [futureConcerts]);
 
     const filtered = futureConcerts.filter((c) => {
-        const matchesSearch =
-            c.title.toLowerCase().includes(search.toLowerCase()) ||
-            c.description.toLowerCase().includes(search.toLowerCase()) ||
-            c.location.toLowerCase().includes(search.toLowerCase()) ||
-            c.program.some(item => 
-                item.title.toLowerCase().includes(search.toLowerCase()) ||
-                (item.details?.toLowerCase().includes(search.toLowerCase()) ?? false)
+        // Split search terms and convert to lowercase
+        const searchTerms = search.toLowerCase().split(/\s+/).filter(term => term.length > 0);
+        
+        // If no search terms, return true
+        if (searchTerms.length === 0) return true;
+
+        // Check if all search terms match anywhere in the concert data
+        const matchesSearch = searchTerms.every(term => {
+            // Check title, description, and location
+            const basicMatch = 
+                c.title.toLowerCase().includes(term) ||
+                c.description.toLowerCase().includes(term) ||
+                c.location.toLowerCase().includes(term);
+
+            // Check program items
+            const programMatch = c.program.some(item => 
+                item.title.toLowerCase().includes(term) ||
+                (item.composer?.toLowerCase().includes(term) ?? false) ||
+                (item.details?.toLowerCase().includes(term) ?? false)
             );
+
+            // Check musicians
+            const musicianMatch = c.musicians.some(m => 
+                m.name.toLowerCase().includes(term) ||
+                (m.role?.toLowerCase().includes(term) ?? false)
+            );
+
+            return basicMatch || programMatch || musicianMatch;
+        });
+
         const matchesCategory = category ? c.category === category : true;
         
         // Check if any program item matches the composer filter
