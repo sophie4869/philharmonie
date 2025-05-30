@@ -1,3 +1,7 @@
 node_modules
 .next
 .env
+favicon_io/*
+orchestra.png
+favicon_io.zip
+.DS_Store
