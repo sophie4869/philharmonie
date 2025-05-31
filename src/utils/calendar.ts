@@ -13,13 +13,36 @@ export function generateICS(concerts: Concert[]): string {
     ].join('\r\n');
 
     const icsEvents = concerts.map(concert => {
-        // Parse the date and time
-        const [hours, minutes] = concert.time.split(':').map(Number);
+        // Parse the date and time robustly
         const startDate = new Date(concert.date);
-        startDate.setHours(hours, minutes, 0, 0);
-        
+        if (concert.time) {
+            // Handles times like "4:00 pm" or "11:30 am" or "20:00"
+            const timeMatch = concert.time.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+            if (timeMatch) {
+                let hours = parseInt(timeMatch[1], 10);
+                const minutes = parseInt(timeMatch[2], 10);
+                const ampm = timeMatch[3]?.toLowerCase();
+                if (ampm === 'pm' && hours < 12) hours += 12;
+                if (ampm === 'am' && hours === 12) hours = 0;
+                startDate.setHours(hours, minutes, 0, 0);
+            } else {
+                // fallback: set to 8pm if time is invalid
+                startDate.setHours(20, 0, 0, 0);
+            }
+        } else {
+            // fallback: set to 8pm if no time
+            startDate.setHours(20, 0, 0, 0);
+        }
         const endDate = new Date(startDate);
         endDate.setHours(endDate.getHours() + 2); // Assuming concerts are 2 hours long
+
+        const musiciansText = concert.musicians && concert.musicians.length > 0
+            ? '\nMusicians: ' + concert.musicians.map(m => m.name + (m.role ? ` (${m.role})` : '')).join(', ')
+            : '';
+        const programText = concert.program && concert.program.length > 0
+            ? '\nProgram: ' + concert.program.map(p => (p.composer ? p.composer + ': ' : '') + p.title + (p.details ? ` (${p.details})` : '')).join(' | ')
+            : '';
+        const fullDescription = escapeText(concert.description + musiciansText + programText);
 
         const event = [
             'BEGIN:VEVENT',
@@ -27,7 +50,7 @@ export function generateICS(concerts: Concert[]): string {
             `DTSTART:${formatDate(startDate)}`,
             `DTEND:${formatDate(endDate)}`,
             `SUMMARY:${escapeText(concert.title)}`,
-            `DESCRIPTION:${escapeText(concert.description)}`,
+            `DESCRIPTION:${fullDescription}`,
             `LOCATION:${escapeText(concert.location)}`,
             `URL:${concert.booking_url}`,
             'END:VEVENT'
