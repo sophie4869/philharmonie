@@ -15,6 +15,7 @@ interface ConcertTableProps {
     category: string;
     program: ProgramItem[];
     musicians: Musician[];
+    time: string;
   }[];
   palette?: 'blue' | 'peach';
 }
@@ -90,14 +91,14 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
       <div className={`overflow-x-auto border-2 rounded-lg ${paletteClasses.border} bg-transparent`}>
         <table className={`min-w-full font-sans bg-white overflow-hidden`}>
           <thead>
-            <tr className={`${paletteClasses.tableHeader} font-sans`}>
-              <th className="p-2 text-base font-semibold font-sans w-24">Image</th>
-              <th className="p-2 text-base font-semibold font-sans">Title</th>
-              <th className="p-2 text-base font-semibold font-sans">Date</th>
-              <th className="p-2 text-base font-semibold font-sans min-w-[200px]">Composers</th>
-              <th className="p-2 text-base font-semibold font-sans min-w-[250px]">Musicians</th>
-              <th className="p-2 text-base font-semibold font-sans">Prices (€)</th>
-              <th className="p-2 text-base font-semibold font-sans">Actions</th>
+            <tr className={`font-sans ${paletteClasses.cardheading}`}>
+              <th className="p-2">Image</th>
+              <th className="p-2">Title</th>
+              <th className="p-2">Date</th>
+              <th className="p-2">Time</th>
+              <th className="p-2">Composers</th>
+              <th className="p-2">Musicians</th>
+              <th className="p-2">Prices</th>
             </tr>
           </thead>
           <tbody>
@@ -121,27 +122,10 @@ export default function ConcertTable({ concerts, palette = 'blue' }: ConcertTabl
                     </td>
                     <td className={`p-2 font-semibold font-sans ${paletteClasses.cardheading}`}>{concert.title}</td>
                     <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{new Date(concert.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
+                    <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{concert.time}</td>
                     <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[200px]`}>{getComposerSummary(concert.program)}</td>
                     <td className={`p-2 font-sans ${paletteClasses.cardpara} min-w-[250px]`}>{getMusicianSummary(concert.musicians)}</td>
                     <td className={`p-2 font-sans ${paletteClasses.cardpara}`}>{concert.prices.join(', ')}</td>
-                    <td className="p-2">
-                      <div className="flex gap-2">
-                        <a
-                          href={concert.booking_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
-                        >
-                          Book
-                        </a>
-                        <button
-                          onClick={() => setSelectedConcert(concert)}
-                          className={`inline-block font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
-                        >
-                          Program
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 ))}
               </React.Fragment>

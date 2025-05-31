@@ -16,9 +16,20 @@ async function getConcerts(): Promise<ConcertType[]> {
     booking_url: dbConcert.booking_url || '',
     prices: dbConcert.prices || [],
     date: String(dbConcert.date || ''),
+    time: String(dbConcert.time || ''),
     category: dbConcert.category || '',
-    program: dbConcert.program || [],
-    musicians: dbConcert.musicians || [],
+    program: (dbConcert.program || []).map((item: any) => {
+      const { _id, ...rest } = item;
+      return _id !== undefined && _id !== null 
+        ? { ...rest, _id: String(_id) } 
+        : rest;
+    }),
+    musicians: (dbConcert.musicians || []).map((musician: any) => {
+      const { _id, ...rest } = musician;
+      return _id !== undefined && _id !== null 
+        ? { ...rest, _id: String(_id) } 
+        : rest;
+    }),
     status: dbConcert.status || 'available',
   }));
 }

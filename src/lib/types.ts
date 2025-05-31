@@ -6,6 +6,7 @@ export interface Concert {
   booking_url: string;
   prices: number[];
   date: string;
+  time: string;
   category: string;
   program: ProgramItem[];
   musicians: { name: string; role?: string }[];

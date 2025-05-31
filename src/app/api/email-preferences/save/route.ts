@@ -79,6 +79,7 @@ export async function POST(request: Request) {
             booking_url: '',
             prices: [],
             date: new Date().toISOString(),
+            time: '',
             category: 'Welcome',
             program: [],
             musicians: [],

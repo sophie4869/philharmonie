@@ -15,6 +15,7 @@ export interface ProgramItem {
 }
 
 export interface Concert {
+  id?: string;
   title: string;
   description: string;
   location: string;
@@ -23,6 +24,7 @@ export interface Concert {
   prices: number[];
   status: 'available' | 'sold_out' | 'few_remaining';
   date: string;
+  time: string;
   category: string;
   program: ProgramItem[];
   musicians: Musician[];
@@ -174,6 +176,7 @@ async function fetchConcerts(
 
       const description = (card.querySelector('.EventCard-description p')?.textContent || '').trim();
       const location = (card.querySelector('.EventCard-place')?.textContent || '').trim();
+      const time = (card.closest('.agenda-event-wrapper')?.querySelector('.agendaTimer-time')?.textContent || '').trim();
       const defaultImage = "https://philharmoniedeparis.fr/themes/custom/pdp_theme/images/sprite.svg?v1.0#logo-pp-vertical";
       let imageSrc = card.parentElement?.querySelector('.Card-image img')?.getAttribute('src') || '';
       if (imageSrc && !imageSrc.startsWith('http')) {
@@ -211,6 +214,7 @@ async function fetchConcerts(
           prices,
           status,
           date,
+          time,
           category,
           program: [],
           musicians: []

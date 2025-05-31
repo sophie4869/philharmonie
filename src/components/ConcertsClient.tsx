@@ -289,6 +289,7 @@ export default function ConcertsClient({
                             <button
                                 onClick={() => {
                                     const newMonth = new Date(currentMonth);
+                                    newMonth.setDate(1);
                                     newMonth.setMonth(newMonth.getMonth() - 1);
                                     setCurrentMonth(newMonth);
                                 }}
@@ -305,6 +306,7 @@ export default function ConcertsClient({
                             <button
                                 onClick={() => {
                                     const newMonth = new Date(currentMonth);
+                                    newMonth.setDate(1);
                                     newMonth.setMonth(newMonth.getMonth() + 1);
                                     setCurrentMonth(newMonth);
                                 }}
@@ -358,7 +360,8 @@ export default function ConcertsClient({
                                         }`}
                                         onClick={() => window.open(concert.booking_url, '_blank')}
                                     >
-                                        {concert.title}
+                                        <div className="font-semibold">{concert.time}</div>
+                                        <div className="line-clamp-2">{concert.title}</div>
                                     </div>
                                 ))}
                             </div>

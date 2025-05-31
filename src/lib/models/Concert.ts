@@ -16,6 +16,7 @@ interface IConcert {
   booking_url: string;
   prices: number[];
   date: Date;
+  time: string;
   category: string;
   program: ProgramItem[];
   musicians: { name: string; role?: string }[];
@@ -46,6 +47,10 @@ const concertSchema = new mongoose.Schema({
   prices: [Number],
   date: {
     type: Date,
+    required: true,
+  },
+  time: {
+    type: String,
     required: true,
   },
   category: String,

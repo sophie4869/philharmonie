@@ -13,7 +13,11 @@ export function generateICS(concerts: Concert[]): string {
     ].join('\r\n');
 
     const icsEvents = concerts.map(concert => {
+        // Parse the date and time
+        const [hours, minutes] = concert.time.split(':').map(Number);
         const startDate = new Date(concert.date);
+        startDate.setHours(hours, minutes, 0, 0);
+        
         const endDate = new Date(startDate);
         endDate.setHours(endDate.getHours() + 2); // Assuming concerts are 2 hours long
 
