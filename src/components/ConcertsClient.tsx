@@ -29,6 +29,7 @@ export default function ConcertsClient({
     const [showEmailPreferences, setShowEmailPreferences] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [areAllCardsFlipped, setAreAllCardsFlipped] = useState(false);
+    const [selectedCalendarConcert, setSelectedCalendarConcert] = useState<Concert | null>(null);
 
     useEffect(() => {
         // Set initial view from localStorage on client mount
@@ -358,7 +359,7 @@ export default function ConcertsClient({
                                         className={`text-xs p-1 mb-1 rounded cursor-pointer ${paletteClasses.text} ${
                                             `bg-${palette}highlight/20 hover:bg-${palette}highlight/30`
                                         }`}
-                                        onClick={() => window.open(concert.booking_url, '_blank')}
+                                        onClick={() => setSelectedCalendarConcert(concert)}
                                     >
                                         <div className="font-semibold">{concert.time}</div>
                                         <div className="line-clamp-2">{concert.title}</div>
@@ -422,6 +423,66 @@ export default function ConcertsClient({
                     show={showEmailPreferences}
                     onClose={() => setShowEmailPreferences(false)}
                 />
+            )}
+            {selectedCalendarConcert && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className={`relative max-w-2xl w-full rounded-lg shadow-lg p-6 ${paletteClasses.card}`}>
+                        <button
+                            onClick={() => setSelectedCalendarConcert(null)}
+                            className={`absolute top-4 right-4 text-2xl font-bold ${paletteClasses.headline}`}
+                        >
+                            ×
+                        </button>
+                        <h2 className={`text-xl font-bold mb-4 ${paletteClasses.cardheading}`}>{selectedCalendarConcert.title}</h2>
+                        {selectedCalendarConcert.musicians.length > 0 && (
+                            <>
+                                <h3 className={`text-lg font-bold mb-2 ${paletteClasses.cardheading}`}>Musicians</h3>
+                                <div className="space-y-2 mb-4">
+                                    {selectedCalendarConcert.musicians.map((musician, index) => (
+                                        <div key={index} className={`text-sm ${paletteClasses.cardpara}`}>
+                                            <span className="font-semibold">{musician.name}</span>
+                                            {musician.role && <span className="italic">, {musician.role}</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        <h3 className={`text-lg font-bold mb-2 ${paletteClasses.cardheading}`}>Program</h3>
+                        {selectedCalendarConcert.program.length > 0 ? (
+                            <div className="space-y-4">
+                                {selectedCalendarConcert.program.map((item, index) => (
+                                    <div key={index} className="mb-4">
+                                        {item.isIntermission ? (
+                                            <div className={`text-sm font-semibold ${paletteClasses.cardpara}`}>{item.title}</div>
+                                        ) : (
+                                            <>
+                                                {item.composer && (
+                                                    <div className={`text-sm font-semibold ${paletteClasses.cardheading}`}>{item.composer}</div>
+                                                )}
+                                                <div className={`text-sm ${paletteClasses.cardpara}`}>{item.title}</div>
+                                                {item.details && (
+                                                    <div className={`text-xs italic ${paletteClasses.cardpara}`}>{item.details}</div>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className={`text-sm ${paletteClasses.cardpara}`}>Program not yet available</div>
+                        )}
+                        <div className="mt-4 flex gap-2">
+                            <a
+                                href={selectedCalendarConcert.booking_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`flex-1 text-center font-semibold text-base font-sans px-3 py-1 rounded border-2 transition ${paletteClasses.button}`}
+                            >
+                                Book
+                            </a>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
