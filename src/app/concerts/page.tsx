@@ -16,6 +16,7 @@ async function getConcerts(): Promise<ConcertType[]> {
     booking_url: dbConcert.booking_url || '',
     prices: dbConcert.prices || [],
     date: String(dbConcert.date || ''),
+    time: String(dbConcert.time || ''),
     category: dbConcert.category || '',
     program: dbConcert.program || [],
     musicians: dbConcert.musicians || [],

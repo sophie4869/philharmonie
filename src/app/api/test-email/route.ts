@@ -25,6 +25,7 @@ export async function GET(request: Request) {
         booking_url: 'https://example.com',
         prices: [],
         date: new Date().toISOString(),
+        time: '10:00 AM',
         category: 'Test',
         program: [],
         musicians: [],

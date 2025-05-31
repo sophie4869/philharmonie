@@ -200,4 +200,30 @@ export async function sendDigestForAllMusicians(
     console.error('Error sending digest email:', error);
     throw error;
   }
+}
+
+export async function sendLogEmail(to: string, logText: string) {
+  try {
+    await mailjet.post('send', { version: 'v3.1' }).request({
+      Messages: [
+        {
+          From: {
+            Email: process.env.EMAIL_FROM,
+            Name: 'Concert Alerts from Sophie',
+          },
+          To: [
+            {
+              Email: to,
+              Name: to.split('@')[0],
+            },
+          ],
+          Subject: 'Cron Job Log',
+          TextPart: logText,
+        },
+      ],
+    });
+  } catch (error) {
+    console.error('Error sending log email:', error);
+    throw error;
+  }
 } 

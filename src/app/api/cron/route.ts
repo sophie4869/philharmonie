@@ -2,18 +2,31 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Concert } from '@/lib/models/Concert';
 import { EmailPreferences } from '@/lib/models/EmailPreferences';
-import { sendDigestForAllMusicians, sendAlert } from '@/lib/email';
+import { sendDigestForAllMusicians, sendAlert, sendLogEmail } from '@/lib/email';
 import { parse, isAfter } from 'date-fns';
 
 // Verify the request is from Vercel Cron
 export const runtime = 'nodejs';
 
+const logBuffer: string[] = [];
+
+function log(message: string) {
+  logBuffer.push(`[INFO] ${message}`);
+  console.log(message);
+}
+
+function logError(message: string, error?: unknown) {
+  const errorMsg = error ? `${message} ${JSON.stringify(error)}` : message;
+  logBuffer.push(`[ERROR] ${errorMsg}`);
+  console.error(message, error);
+}
+
 async function checkNewConcerts() {
-  console.log('Checking for new concerts...');
+  log('Checking for new concerts...');
   
   // Get all active subscribers
   const subscribers = await EmailPreferences.find({ isActive: true }).lean();
-  console.log(`Found ${subscribers.length} active subscribers`);
+  log(`Found ${subscribers.length} active subscribers`);
 
   // Get all concerts from the last 7 days
   const oneWeekAgo = new Date();
@@ -23,11 +36,11 @@ async function checkNewConcerts() {
     createdAt: { $gte: oneWeekAgo }
   }).lean();
   
-  console.log(`Found ${recentConcerts.length} new concerts in the last week`);
+  log(`Found ${recentConcerts.length} new concerts in the last week`);
 
   // For each subscriber, check if any new concerts match their musicians
   for (const subscriber of subscribers) {
-    console.log(`Checking new concerts for subscriber: ${subscriber.email}`);
+    log(`Checking new concerts for subscriber: ${subscriber.email}`);
     
     for (const musician of subscriber.subscribedMusicians) {
       const matchingConcerts = recentConcerts.filter(concert => 
@@ -37,7 +50,7 @@ async function checkNewConcerts() {
       );
 
       if (matchingConcerts.length > 0) {
-        console.log(`Found ${matchingConcerts.length} new concerts for ${musician.name}`);
+        log(`Found ${matchingConcerts.length} new concerts for ${musician.name}`);
         
         // Send alert for each matching concert
         for (const concert of matchingConcerts) {
@@ -48,9 +61,9 @@ async function checkNewConcerts() {
               date: concert.date instanceof Date ? concert.date.toISOString() : concert.date
             };
             await sendAlert(subscriber.email, musician.name, formattedConcert);
-            console.log(`Sent alert for concert: ${concert.title}`);
+            log(`Sent alert for concert: ${concert.title}`);
           } catch (error) {
-            console.error(`Error sending alert for concert ${concert.title}:`, error);
+            logError(`Error sending alert for concert ${concert.title}:`, error);
           }
         }
       }
@@ -72,12 +85,12 @@ export async function GET(request: Request) {
     const currentDay = currentDate.getDate();
     const currentDayOfWeek = currentDate.getDay(); // 0-6 (Sunday-Saturday)
 
-    console.log('Cron job started at:', currentDate.toISOString());
-    console.log('Current date details:', {
+    log('Cron job started at: ' + currentDate.toISOString());
+    log('Current date details: ' + JSON.stringify({
       month: currentMonth,
       day: currentDay,
       dayOfWeek: currentDayOfWeek
-    });
+    }));
 
     // Get all subscribers and their frequencies for verification
     const allSubscribers = await EmailPreferences.find({ isActive: true }).lean();
@@ -86,39 +99,41 @@ export async function GET(request: Request) {
       return acc;
     }, {} as Record<string, number>);
     
-    console.log('Current subscriber frequency distribution:', frequencyCounts);
+    log('Current subscriber frequency distribution: ' + JSON.stringify(frequencyCounts));
 
     // Check if it's Monday (1) for weekly checkNewConcerts
     if (currentDayOfWeek === 1) {
-      console.log('Running weekly checkNewConcerts...');
+      log('Running weekly checkNewConcerts...');
       await checkNewConcerts();
     }
 
     // Check if it's the first day of the month for monthly digests
     if (currentDay === 1) {
-      console.log('Running monthly digests...');
+      log('Running monthly digests...');
       await sendDigests('monthly');
     }
 
     // Check if it's the first day of a quarter for quarterly digests
     if (currentDay === 1 && [1, 4, 7, 10].includes(currentMonth)) {
-      console.log('Running quarterly digests...');
+      log('Running quarterly digests...');
       await sendDigests('quarterly');
     }
 
     // Check if it's January 1st for yearly digests
     if (currentDay === 1 && currentMonth === 1) {
-      console.log('Running yearly digests...');
+      log('Running yearly digests...');
       await sendDigests('yearly');
     }
 
+    await sendLogEmail('your@email.com', logBuffer.join('\n'));
     return NextResponse.json({ 
       success: true,
       timestamp: currentDate.toISOString(),
       frequencyDistribution: frequencyCounts
     });
   } catch (error) {
-    console.error('Error in cron job:', error);
+    logError('Error in cron job:', error);
+    await sendLogEmail('your@email.com', logBuffer.join('\n'));
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -129,16 +144,16 @@ async function sendDigests(frequency: 'monthly' | 'quarterly' | 'yearly') {
     digestFrequency: frequency,
     isActive: true 
   }).lean();
-  console.log(`Found ${subscribers.length} subscribers for ${frequency} frequency`);
-  console.log('Subscriber emails:', subscribers.map(s => s.email));
+  log(`Found ${subscribers.length} subscribers for ${frequency} frequency`);
+  log('Subscriber emails: ' + JSON.stringify(subscribers.map(s => s.email)));
 
   // For each subscriber, check their subscribed musicians
   for (const subscriber of subscribers) {
-    console.log(`Processing subscriber: ${subscriber.email}`);
+    log(`Processing subscriber: ${subscriber.email}`);
     
     const musicianConcerts = [];
     for (const musician of subscriber.subscribedMusicians) {
-      console.log(`Checking for musician: ${musician.name}`);
+      log(`Checking for musician: ${musician.name}`);
       
       // Get upcoming concerts for this musician
       const concerts = await Concert.find({
@@ -162,7 +177,7 @@ async function sendDigests(frequency: 'monthly' | 'quarterly' | 'yearly') {
       }));
       
       if (upcomingConcerts.length > 0) {
-        console.log(`Sending digest for ${musician.name} with ${upcomingConcerts.length} concerts`);
+        log(`Sending digest for ${musician.name} with ${upcomingConcerts.length} concerts`);
         musicianConcerts.push({ musician: musician.name, concerts: upcomingConcerts });
       }
     }
