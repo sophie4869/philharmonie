@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://philharmonie.sophiebi.com
+
+# Sitemaps
+Sitemap: https://philharmonie.sophiebi.com/sitemap.xml
