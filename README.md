@@ -18,6 +18,20 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Email Digests
+
+To test the email digest functionality, you can run the following commands:
+
+```bash
+# Run all digest types
+npx ts-node -P src/scripts/tsconfig.json src/scripts/sendDigests.ts
+
+# Run specific digest types
+npx ts-node -P src/scripts/tsconfig.json src/scripts/sendDigests.ts monthly
+npx ts-node -P src/scripts/tsconfig.json src/scripts/sendDigests.ts quarterly
+npx ts-node -P src/scripts/tsconfig.json src/scripts/sendDigests.ts yearly
+```
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
