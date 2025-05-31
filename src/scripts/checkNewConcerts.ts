@@ -27,6 +27,7 @@ const testConcerts: ConcertType[] = [
     prices: [20, 30, 40],
     status: "available",
     date: new Date().toISOString(),
+    time: "8:00 pm",
     category: "Symphony",
     program: [{ title: "Concerto", composer: "Schumann" }],
     musicians: [{ name: "Martha Argerich" }]
@@ -40,6 +41,7 @@ const testConcerts: ConcertType[] = [
     prices: [25, 35, 45],
     status: "available",
     date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    time: "4:00 pm",
     category: "Recital",
     program: [{ title: "Nocturne", composer: "Chopin" }],
     musicians: [{ name: "Evgeny Kissin" }]

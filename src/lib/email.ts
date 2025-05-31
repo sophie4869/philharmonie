@@ -16,7 +16,7 @@ export async function sendMusicianDigest(
       (concert) => `
         <li>
           <strong>${concert.title}</strong><br>
-          Date: ${new Date(concert.date).toLocaleDateString()}<br>
+          Date & Time: ${new Date(concert.date).toLocaleDateString()}${concert.time ? ' ' + concert.time : ''}<br>
           Location: ${concert.location}<br>
           <a href="${concert.booking_url}">Book Tickets</a>
         </li>
@@ -67,7 +67,7 @@ export async function sendAlert(
     <div>
       <h3>${concert.title}</h3>
       ${concert.image_url ? `<img src="${concert.image_url}" alt="${concert.title}" style="max-width:200px;height:auto;margin-bottom:16px;border-radius:8px;" />` : ''}<br>
-      <p>Date: ${new Date(concert.date).toLocaleDateString()}</p>
+      <p>Date & Time: ${new Date(concert.date).toLocaleDateString()}${concert.time ? ' ' + concert.time : ''}</p>
       <p>Location: ${concert.location}</p>
       ${concert.program && concert.program.length > 0 ? `
         <div>
@@ -159,7 +159,7 @@ export async function sendDigestForAllMusicians(
             <li style="margin-bottom: 24px;">
               <strong>${concert.title}</strong><br>
               ${concert.image_url ? `<img src="${concert.image_url}" alt="${concert.title}" style="max-width:200px;height:auto;margin:8px 0 8px 0;border-radius:8px;" />` : ''}<br>
-              Date: ${new Date(concert.date).toLocaleDateString()}<br>
+              Date & Time: ${new Date(concert.date).toLocaleDateString()}${concert.time ? ' ' + concert.time : ''}<br>
               Location: ${concert.location}<br>
               ${concert.program && concert.program.length > 0 ? `
                 <div>
